@@ -512,7 +512,7 @@
     <div id="cen_items"></div>
   </div>
 
-  <button class="btn-save" onclick="saveNutr()" style="margin-bottom:14px">✓ Guardar alimentación de hoy</button>
+  
 
   <!-- Historial -->
   <div class="table-wrap">
@@ -993,6 +993,13 @@ async function toggleFood(id) {
   setNutrState(id, newVal);
   const today = getTodayKey();
   await dbToggleAlimento(today, id, newVal);
+  // Auto-save calories
+  const newState = getNutrState();
+  const des = calcMealTotal('desayuno', newState);
+  const alm = calcMealTotal('almuerzo', newState);
+  const com = calcMealTotal('comida', newState);
+  const cen = calcMealTotal('cena', newState);
+  await dbSaveNutr(today, des, alm, com, cen);
   renderNutrition();
 }
 
@@ -1056,9 +1063,7 @@ async function renderNutrition() {
   const today = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
   document.getElementById('nutr-date').textContent = today.charAt(0).toUpperCase() + today.slice(1);
   const today = getTodayKey();
-  if (!nutrStateCache[today]) {
-    nutrStateCache[today] = await dbGetAlimentos(today);
-  }
+  nutrStateCache[today] = await dbGetAlimentos(today);
   const state = getNutrState();
   renderFoodList('des_items', 'desayuno', state, true);
   renderFoodList('alm_items', 'almuerzo', state, false);
