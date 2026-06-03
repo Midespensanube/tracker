@@ -1060,8 +1060,8 @@ async function renderNutrHistory() {
 }
 
 async function renderNutrition() {
-  const today = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
-  document.getElementById('nutr-date').textContent = today.charAt(0).toUpperCase() + today.slice(1);
+  const todayLabel = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
+  document.getElementById('nutr-date').textContent = todayLabel.charAt(0).toUpperCase() + todayLabel.slice(1);
   const today = getTodayKey();
   nutrStateCache[today] = await dbGetAlimentos(today);
   const state = getNutrState();
