@@ -791,10 +791,10 @@ async function saveSession() {
   renderRunning();
 }
 
-async function deleteSession(id) {
+async function deleteSession(fecha, tipo) {
   if (!confirm('¿Eliminar?')) return;
   showLoading('⏳ Eliminando...');
-  await dbDeleteSession(id);
+  await sbFetch('Sesiones?fecha=eq.' + fecha + '&tipo=eq.' + tipo, { method: 'DELETE' });
   sessions = await dbGetSessions();
   hideLoading();
   renderRunning();
@@ -869,7 +869,7 @@ function renderTable() {
       <td style="color:var(--accent3)">${s.km?s.km.toFixed(2):'—'}</td>
       <td style="color:var(--accent2)">${s.tiempo}</td>
       <td style="color:var(--accent1);font-weight:700">${s.calorias}</td>
-      <td><button class="btn-del" onclick="deleteSession(${s.id})">✕</button></td>
+      <td><button class="btn-del" onclick="deleteSession('${s.fecha}','${s.tipo}')">✕</button></td>
     </tr>`).join('');
 }
 
