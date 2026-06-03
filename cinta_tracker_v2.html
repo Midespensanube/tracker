@@ -646,6 +646,28 @@ async function dbGetAllNutr() {
   return data || [];
 }
 
+async function dbGetAlimentos(fecha) {
+  const data = await sbFetch('alimentos?fecha=eq.' + fecha + '&select=*');
+  if (!data || !data.length) return {};
+  const state = {};
+  data.forEach(r => { state[r.alimento_id] = true; });
+  return state;
+}
+
+async function dbToggleAlimento(fecha, alimento_id, activo) {
+  if (activo) {
+    await sbFetch('alimentos', {
+      method: 'POST',
+      upsert: true,
+      body: JSON.stringify({fecha, alimento_id})
+    });
+  } else {
+    await sbFetch('alimentos?fecha=eq.' + fecha + '&alimento_id=eq.' + alimento_id, {
+      method: 'DELETE'
+    });
+  }
+}
+
 async function dbGetSuppState(fecha) {
   const data = await sbFetch('suplementos?fecha=eq.' + fecha + '&select=*');
   if (!data || !data.length) return {};
@@ -965,9 +987,12 @@ function setNutrState(id, val) {
   nutrStateCache[today][id] = val;
 }
 
-function toggleFood(id) {
+async function toggleFood(id) {
   const state = getNutrState();
-  setNutrState(id, !state[id]);
+  const newVal = !state[id];
+  setNutrState(id, newVal);
+  const today = getTodayKey();
+  await dbToggleAlimento(today, id, newVal);
   renderNutrition();
 }
 
@@ -1030,9 +1055,9 @@ async function renderNutrHistory() {
 async function renderNutrition() {
   const today = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
   document.getElementById('nutr-date').textContent = today.charAt(0).toUpperCase() + today.slice(1);
-  const todayNutr = await dbGetNutr(getTodayKey());
-  if (todayNutr && !nutrStateCache[getTodayKey()]) {
-    nutrStateCache[getTodayKey()] = {};
+  const today = getTodayKey();
+  if (!nutrStateCache[today]) {
+    nutrStateCache[today] = await dbGetAlimentos(today);
   }
   const state = getNutrState();
   renderFoodList('des_items', 'desayuno', state, true);
