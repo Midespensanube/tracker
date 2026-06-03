@@ -634,18 +634,11 @@ async function dbGetNutr(fecha) {
 }
 
 async function dbSaveNutr(fecha, des, alm, com, cen) {
-  const existing = await dbGetNutr(fecha);
-  if (existing) {
-    await sbFetch('nutrici%C3%B3n?fecha=eq.' + fecha, {
-      method: 'PATCH',
-      body: JSON.stringify({desayuno:des, almuerzo:alm, comida:com, cena:cen})
-    });
-  } else {
-    await sbFetch('nutrici%C3%B3n', {
-      method: 'POST',
-      body: JSON.stringify({fecha, desayuno:des, almuerzo:alm, comida:com, cena:cen})
-    });
-  }
+  await sbFetch('nutrici%C3%B3n', {
+    method: 'POST',
+    upsert: true,
+    body: JSON.stringify({fecha, desayuno:des, almuerzo:alm, comida:com, cena:cen})
+  });
 }
 
 async function dbGetAllNutr() {
