@@ -620,6 +620,7 @@ async function dbGetSessions() {
 async function dbSaveSession(s) {
   await sbFetch('Sesiones', {
     method: 'POST',
+    upsert: true,
     body: JSON.stringify({fecha:s.fecha, tipo:s.tipo, km:s.km, tiempo:s.tiempo, calorias:s.calorias, pasos:s.pasos})
   });
 }
