@@ -625,8 +625,8 @@ async function dbSaveSession(s) {
   });
 }
 
-async function dbDeleteSession(id) {
-  await sbFetch('Sesiones?id=eq.' + id, { method: 'DELETE', prefer: '' });
+async function dbDeleteSession(fecha, tipo) {
+  await sbFetch('Sesiones?fecha=eq.' + fecha + '&tipo=eq.' + tipo, { method: 'DELETE' });
 }
 
 async function dbGetNutr(fecha) {
@@ -794,7 +794,7 @@ async function saveSession() {
 async function deleteSession(fecha, tipo) {
   if (!confirm('¿Eliminar?')) return;
   showLoading('⏳ Eliminando...');
-  await sbFetch('Sesiones?fecha=eq.' + fecha + '&tipo=eq.' + tipo, { method: 'DELETE' });
+  await dbDeleteSession(fecha, tipo);
   sessions = await dbGetSessions();
   hideLoading();
   renderRunning();
