@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Armando Tracker">
+<meta name="theme-color" content="#0a0f1e">
+<title>Armando Tracker</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0f1e;
+    --card: #111827;
+    --border: #1e293b;
+    --accent1: #f97316;
+    --accent2: #38bdf8;
+    --accent3: #a78bfa;
+    --green: #34d399;
+    --pink: #f472b6;
+    --yellow: #fbbf24;
+    --text: #f1f5f9;
+    --muted: #64748b;
+    --red: #ef4444;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; min-height: 100vh; padding-bottom: 80px; }
+
+  /* NAV */
+  .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0d1424; border-top: 1px solid var(--border); display: flex; z-index: 100; }
+  .nav-btn { flex: 1; padding: 12px 4px 10px; background: none; border: none; color: var(--muted); cursor: pointer; font-family: monospace; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color 0.2s; }
+  .nav-btn.active { color: var(--accent1); }
+  .nav-btn span { font-size: 18px; }
+
+  /* PAGES */
+  .page { display: none; padding: 16px; max-width: 600px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* HEADER */
+  .page-header { margin-bottom: 20px; }
+  .page-label { color: var(--accent1); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 2px; }
+  .page-title { font-size: 22px; font-weight: 900; }
+  .page-sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+  .card-title { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+
+  /* STATS */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+  .stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 11px; }
+  .stat-label { color: var(--muted); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+  .stat-value { font-size: 17px; font-weight: 700; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; }
+  .tab { padding: 7px 13px; border-radius: 6px; cursor: pointer; font-family: monospace; font-size: 12px; border: 1px solid var(--border); background: transparent; color: var(--muted); white-space: nowrap; }
+  .tab.active { background: var(--card); color: var(--text); font-weight: 700; border-color: var(--accent1); }
+
+  /* CHART */
+  .chart-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 8px 8px; margin-bottom: 14px; }
+  canvas { max-height: 200px; }
+
+  /* FORM */
+  .form-card { background: var(--card); border: 1px solid var(--accent1); border-radius: 12px; padding: 16px; margin-bottom: 14px; display: none; }
+  .form-card.open { display: block; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .fg label { display: block; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .fg input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 10px; color: var(--text); font-family: monospace; font-size: 13px; }
+  .turno-row { display: flex; gap: 8px; margin-top: 10px; }
+  .turno-btn { flex: 1; padding: 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); font-family: monospace; font-weight: 700; cursor: pointer; font-size: 13px; }
+  .turno-btn.am { border-color: var(--accent1); background: rgba(249,115,22,0.15); color: var(--accent1); }
+  .turno-btn.pm { border-color: var(--accent2); background: rgba(56,189,248,0.15); color: var(--accent2); }
+  .btn-save { background: var(--green); color: #0a0f1e; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700; font-family: monospace; cursor: pointer; width: 100%; margin-top: 12px; }
+  .btn-add { background: var(--accent1); color: var(--text); border: none; border-radius: 8px; padding: 9px 15px; cursor: pointer; font-weight: 700; font-size: 13px; font-family: monospace; }
+  .btn-cancel { background: var(--border); }
+
+  /* TABLE */
+  .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+  .table-head { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+  .table-scroll { max-height: 260px; overflow-y: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { padding: 7px 10px; text-align: left; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); font-size: 10px; }
+  td { padding: 7px 10px; border-bottom: 1px solid rgba(30,41,59,0.4); }
+  .badge { border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: 700; }
+  .badge-m { background: rgba(249,115,22,0.2); color: var(--accent1); }
+  .badge-t { background: rgba(56,189,248,0.2); color: var(--accent2); }
+  .btn-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 2px 5px; }
+
+  /* SUPPLEMENTS */
+  .moment-block { margin-bottom: 20px; }
+  .moment-title { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .moment-emoji { font-size: 20px; }
+  .moment-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .moment-time { font-size: 11px; color: var(--muted); margin-left: auto; background: var(--border); padding: 3px 8px; border-radius: 20px; }
+
+  .supp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 14px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px; cursor: pointer; transition: border-color 0.2s; }
+  .supp-card.checked { border-color: var(--green); background: rgba(52,211,153,0.05); }
+  .supp-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; transition: all 0.2s; font-size: 12px; }
+  .supp-card.checked .supp-check { background: var(--green); border-color: var(--green); color: #0a0f1e; }
+  .supp-info { flex: 1; }
+  .supp-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .supp-dose { font-size: 11px; color: var(--accent1); margin-bottom: 4px; font-weight: 700; }
+  .supp-why { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .supp-alert { font-size: 10px; color: var(--yellow); margin-top: 4px; }
+
+  .progress-bar-wrap { background: var(--border); border-radius: 20px; height: 6px; margin: 12px 0 4px; }
+  .progress-bar { background: var(--green); border-radius: 20px; height: 6px; transition: width 0.4s; }
+  .progress-label { font-size: 10px; color: var(--muted); text-align: right; }
+
+  .reset-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 8px 14px; font-family: monospace; font-size: 11px; cursor: pointer; width: 100%; margin-top: 4px; }
+
+  /* ANALYTICS */
+  .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .analytic-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px; }
+  .analytic-label { font-size: 9px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .analytic-value { font-size: 20px; font-weight: 700; }
+  .analytic-ref { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .analytic-trend { font-size: 10px; margin-top: 4px; }
+  .trend-up { color: var(--green); }
+  .trend-warn { color: var(--yellow); }
+  .trend-danger { color: var(--red); }
+
+  .footer { text-align: center; color: var(--muted); font-size: 10px; margin-top: 16px; letter-spacing: 1px; padding: 0 16px; }
+</style>
+</head>
+<body>
+
+<!-- PAGE: RUNNING -->
+<div class="page active" id="page-running">
+  <div class="page-header">
+    <div class="page-label">Tracker Personal</div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <div class="page-title">CINTA</div>
+        <div class="page-sub">100 kg · Objetivo 85 kg</div>
+      </div>
+      <button class="btn-add" id="btnToggle" onclick="toggleForm()">+ Sesión</button>
+    </div>
+  </div>
+
+  <div class="form-card" id="formCard">
+    <div style="font-size:10px;color:var(--accent1);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Nueva sesión</div>
+    <div class="form-grid">
+      <div class="fg"><label>Fecha *</label><input type="date" id="f_fecha"></div>
+      <div class="fg"><label>Kilómetros</label><input type="number" step="0.01" placeholder="5.50" id="f_km"></div>
+      <div class="fg"><label>Tiempo (min) *</label><input type="number" placeholder="60" id="f_tiempo"></div>
+      <div class="fg"><label>Calorías *</label><input type="number" placeholder="350" id="f_calorias"></div>
+      <div class="fg" style="grid-column:span 2"><label>Pasos</label><input type="number" placeholder="8000" id="f_pasos"></div>
+    </div>
+    <div class="turno-row">
+      <button class="turno-btn am" id="btn_m" onclick="setTurno('M')">🌅 Mañana</button>
+      <button class="turno-btn" id="btn_t" onclick="setTurno('T')">🌆 Tarde</button>
+    </div>
+    <button class="btn-save" onclick="saveSession()">✓ Guardar sesión</button>
+  </div>
+
+  <div class="stats">
+    <div class="stat" style="border-left:3px solid var(--accent3)">
+      <div class="stat-label">KM totales</div>
+      <div class="stat-value" style="color:var(--accent3)" id="s_km">—</div>
+    </div>
+    <div class="stat" style="border-left:3px solid var(--accent2)">
+      <div class="stat-label">Tiempo</div>
+      <div class="stat-value" style="color:var(--accent2)" id="s_tiempo">—</div>
+    </div>
+    <div class="stat" style="border-left:3px solid var(--accent1)">
+      <div class="stat-label">Calorías</div>
+      <div class="stat-value" style="color:var(--accent1)" id="s_cal">—</div>
+    </div>
+    <div class="stat" style="border-left:3px solid var(--green)">
+      <div class="stat-label">Sesiones</div>
+      <div class="stat-value" style="color:var(--green)" id="s_ses">—</div>
+    </div>
+    <div class="stat" style="border-left:3px solid var(--pink)">
+      <div class="stat-label">Días</div>
+      <div class="stat-value" style="color:var(--pink)" id="s_dias">—</div>
+    </div>
+    <div class="stat" style="border-left:3px solid var(--yellow)">
+      <div class="stat-label">Cal/día</div>
+      <div class="stat-value" style="color:var(--yellow)" id="s_avg">—</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab(this,'calorias')">🔥 Cal</button>
+    <button class="tab" onclick="switchTab(this,'tiempo')">⏱ Tiempo</button>
+    <button class="tab" onclick="switchTab(this,'km')">📏 KM</button>
+    <button class="tab" onclick="switchTab(this,'combo')">📊 Combo</button>
+  </div>
+
+  <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
+
+  <div class="table-wrap">
+    <div class="table-head">
+      <span id="tableCount">Sesiones</span>
+      <button onclick="exportCSV()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:5px;padding:4px 10px;cursor:pointer;font-size:10px;font-family:monospace;">↓ CSV</button>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Fecha</th><th>T</th><th>KM</th><th>Min</th><th>Cal</th><th></th></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footer">PESO: 100 KG · CAL REAL ESTIMADA +10–15%</div>
+</div>
+
+<!-- PAGE: SUPPLEMENTS -->
+<div class="page" id="page-supps">
+  <div class="page-header">
+    <div class="page-label">Protocolo diario</div>
+    <div class="page-title">SUPLEMENTOS</div>
+    <div class="page-sub" id="supp-date">—</div>
+  </div>
+
+  <div class="card" style="padding:12px 16px;margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-size:12px;color:var(--text)">Progreso de hoy</div>
+      <div style="font-size:12px;font-weight:700;color:var(--green)" id="supp-progress-label">0/7</div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="supp-progress-bar" style="width:0%"></div></div>
+  </div>
+
+  <!-- DESAYUNO -->
+  <div class="moment-block">
+    <div class="moment-title">
+      <span class="moment-emoji">🌅</span>
+      <span class="moment-name">Desayuno</span>
+      <span class="moment-time">07:30</span>
+    </div>
+    <div class="supp-card" id="sc-vinagre-d" onclick="toggleSupp('vinagre-d')">
+      <div class="supp-check" id="chk-vinagre-d"></div>
+      <div class="supp-info">
+        <div class="supp-name">Vinagre de manzana</div>
+        <div class="supp-dose">20 ml diluido en agua — ANTES de comer</div>
+        <div class="supp-why">Frena el pico de glucosa de la miel. Tu glucosa bajó de 101 a 94,6 en parte por esto. Tomar con pajita para proteger el esmalte dental.</div>
+      </div>
+    </div>
+    <div class="supp-card" id="sc-multi" onclick="toggleSupp('multi')">
+      <div class="supp-check" id="chk-multi"></div>
+      <div class="supp-info">
+        <div class="supp-name">Multivitamínico</div>
+        <div class="supp-dose">1 comprimido — con el primer sorbo</div>
+        <div class="supp-why">Cobertura de micronutrientes. Las almendras del desayuno aportan la grasa necesaria para absorber las vitaminas liposolubles A, D, E y K.</div>
+        <div class="supp-alert">⚠️ Confirmado: no contiene hierro ✅</div>
+      </div>
+    </div>
+    <div class="supp-card" id="sc-d3k2" onclick="toggleSupp('d3k2')">
+      <div class="supp-check" id="chk-d3k2"></div>
+      <div class="supp-info">
+        <div class="supp-name">D3 + K2</div>
+        <div class="supp-dose">4.000 UI D3 + 100 mcg K2 — con las almendras</div>
+        <div class="supp-why">Vitamina D liposoluble — necesita grasa para absorberse. Las almendras son perfectas. Tu nivel actual es 31,9 ng/mL, necesitas llegar a 50+. El K2 dirige el calcio a los huesos y no a las arterias. Crítico para las protrusiones C6-C7.</div>
+      </div>
+    </div>
+    <div class="supp-card" id="sc-creatina" onclick="toggleSupp('creatina')">
+      <div class="supp-check" id="chk-creatina"></div>
+      <div class="supp-info">
+        <div class="supp-name">Creatina</div>
+        <div class="supp-dose">2g (medio cazo) — mezclar en la bebida de almendra</div>
+        <div class="supp-why">Sin sabor, se disuelve perfectamente. Energía celular y recuperación muscular. Con sesiones dobles es especialmente importante. Idealmente también tomar una dosis post-entreno.</div>
+      </div>
+    </div>
+    <div class="supp-card" id="sc-colageno-m" onclick="toggleSupp('colageno-m')">
+      <div class="supp-check" id="chk-colageno-m"></div>
+      <div class="supp-info">
+        <div class="supp-name">Colágeno + Magnesio</div>
+        <div class="supp-dose">3 cápsulas — al final del desayuno</div>
+        <div class="supp-why">El colágeno se absorbe mejor con el ayuno recién roto. Soporte directo para los discos intervertebrales C6-C7 y la recuperación post-quirúrgica del túnel carpiano.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMIDA -->
+  <div class="moment-block">
+    <div class="moment-title">
+      <span class="moment-emoji">☀️</span>
+      <span class="moment-name">Comida</span>
+      <span class="moment-time">13:30</span>
+    </div>
+    <div class="supp-card" id="sc-omega3" onclick="toggleSupp('omega3')">
+      <div class="supp-check" id="chk-omega3"></div>
+      <div class="supp-info">
+        <div class="supp-name">Omega-3</div>
+        <div class="supp-dose">2 cápsulas — a mitad de la comida</div>
+        <div class="supp-why">Tomar con el AOVE de la ensalada — la grasa reduce la oxidación del omega-3 y mejora su absorción. Tu VSG de 1mm confirma que está funcionando. Antiinflamatorio directo sobre la radiculopatía C7.</div>
+      </div>
+    </div>
+    <div class="supp-card" id="sc-te" onclick="toggleSupp('te')">
+      <div class="supp-check" id="chk-te"></div>
+      <div class="supp-info">
+        <div class="supp-name">Té verde o café</div>
+        <div class="supp-dose">1 taza — AL FINAL de la comida</div>
+        <div class="supp-why">Los taninos del té verde bloquean hasta el 60% de la absorción de hierro. Crítico para bajar la ferritina de 422 ng/mL. El café tiene efecto similar por el ácido clorogénico. Tomar siempre después de comer, nunca antes.</div>
+        <div class="supp-alert">🔴 Clave para ferritina 422 ng/mL</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENA -->
+  <div class="moment-block">
+    <div class="moment-title">
+      <span class="moment-emoji">🌙</span>
+      <span class="moment-name">Cena</span>
+      <span class="moment-time">19:30</span>
+    </div>
+    <div class="supp-card" id="sc-colageno-n" onclick="toggleSupp('colageno-n')">
+      <div class="supp-check" id="chk-colageno-n"></div>
+      <div class="supp-info">
+        <div class="supp-name">Colágeno + Magnesio</div>
+        <div class="supp-dose">3 cápsulas — al empezar la cena</div>
+        <div class="supp-why">La proteína de los huevos potencia la absorción del colágeno. El magnesio nocturno favorece el sueño profundo y la recuperación muscular mientras duermes. Con 8h de sueño tienes la ventana perfecta de reparación.</div>
+      </div>
+    </div>
+    <div class="supp-card" id="sc-jengibre" onclick="toggleSupp('jengibre')">
+      <div class="supp-check" id="chk-jengibre"></div>
+      <div class="supp-info">
+        <div class="supp-name">Infusión de jengibre</div>
+        <div class="supp-dose">1 taza natural — post-cena</div>
+        <div class="supp-why">Antiinflamatorio COX-2 que actúa durante las 8h de sueño. Los gingeroles del jengibre natural reducen la inflamación discal cervical de forma sostenida. Contribuye al VSG de 1mm.</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetSupps()">↺ Reiniciar checklist de hoy</button>
+  <div class="footer" style="margin-top:12px">Toca cada suplemento para marcarlo como tomado</div>
+</div>
+
+<!-- PAGE: ANALYTICS -->
+<div class="page" id="page-analytics">
+  <div class="page-header">
+    <div class="page-label">Analítica comparativa</div>
+    <div class="page-title">ANALÍTICAS</div>
+    <div class="page-sub">Marzo vs Mayo 2026</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🔴 Alertas activas</div>
+    <div style="background:rgba(239,68,68,0.1);border:1px solid var(--red);border-radius:8px;padding:12px;margin-bottom:10px">
+      <div style="color:var(--red);font-weight:700;font-size:13px;margin-bottom:4px">Ferritina 422 ng/mL</div>
+      <div style="font-size:11px;color:var(--muted)">Límite: 375 ng/mL · Subiendo: 407→422 · Solicitar transferrina + IST urgente. Valorar retomar donación de sangre.</div>
+    </div>
+    <div style="background:rgba(251,191,36,0.1);border:1px solid var(--yellow);border-radius:8px;padding:12px">
+      <div style="color:var(--yellow);font-weight:700;font-size:13px;margin-bottom:4px">Vitamina D 31,9 ng/mL</div>
+      <div style="font-size:11px;color:var(--muted)">Insuficiencia leve. Necesitas >50 ng/mL. D3+K2 4.000 UI activo. Control en 3 meses.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">✅ Mejoras confirmadas</div>
+    <div class="analytics-grid">
+      <div class="analytic-card" style="border-left:3px solid var(--green)">
+        <div class="analytic-label">Glucosa</div>
+        <div class="analytic-value" style="color:var(--green)">94,6</div>
+        <div class="analytic-ref">mg/dL · ref: 60–115</div>
+        <div class="analytic-trend trend-up">⬆ Era 101 en marzo</div>
+      </div>
+      <div class="analytic-card" style="border-left:3px solid var(--green)">
+        <div class="analytic-label">VSG</div>
+        <div class="analytic-value" style="color:var(--green)">1 mm</div>
+        <div class="analytic-ref">1ª hora · ref: &lt;18</div>
+        <div class="analytic-trend trend-up">⭐ Mínimo histórico</div>
+      </div>
+      <div class="analytic-card" style="border-left:3px solid var(--green)">
+        <div class="analytic-label">GPT/ALT</div>
+        <div class="analytic-value" style="color:var(--green)">37,5</div>
+        <div class="analytic-ref">U/L · ref: 0–55</div>
+        <div class="analytic-trend trend-up">⬆ Era 42 en marzo</div>
+      </div>
+      <div class="analytic-card" style="border-left:3px solid var(--green)">
+        <div class="analytic-label">GGT</div>
+        <div class="analytic-value" style="color:var(--green)">20,2</div>
+        <div class="analytic-ref">U/L · ref: 0–55</div>
+        <div class="analytic-trend trend-up">✅ Hígado sano</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⭐ Parámetros destacados</div>
+    <div class="analytics-grid">
+      <div class="analytic-card" style="border-left:3px solid var(--accent3)">
+        <div class="analytic-label">Testosterona</div>
+        <div class="analytic-value" style="color:var(--accent3)">5,12</div>
+        <div class="analytic-ref">ng/mL · ref: 2,27–9,76</div>
+        <div class="analytic-trend trend-up">⭐ Mitad alta rango</div>
+      </div>
+      <div class="analytic-card" style="border-left:3px solid var(--accent3)">
+        <div class="analytic-label">PSA</div>
+        <div class="analytic-value" style="color:var(--accent3)">0,12</div>
+        <div class="analytic-ref">ng/mL · ref: 0–4,00</div>
+        <div class="analytic-trend trend-up">⭐ Extraordinario</div>
+      </div>
+      <div class="analytic-card" style="border-left:3px solid var(--accent2)">
+        <div class="analytic-label">Vitamina B12</div>
+        <div class="analytic-value" style="color:var(--accent2)">550</div>
+        <div class="analytic-ref">pg/mL · ref: 187–894</div>
+        <div class="analytic-trend trend-up">✅ Dieta lo cubre</div>
+      </div>
+      <div class="analytic-card" style="border-left:3px solid var(--accent2)">
+        <div class="analytic-label">TSH</div>
+        <div class="analytic-value" style="color:var(--accent2)">2,13</div>
+        <div class="analytic-ref">µUI/mL · ref: 0,35–4,10</div>
+        <div class="analytic-trend trend-up">✅ Tiroides perfecto</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚠️ Vigilancia</div>
+    <div class="analytics-grid">
+      <div class="analytic-card" style="border-left:3px solid var(--red)">
+        <div class="analytic-label">Ferritina</div>
+        <div class="analytic-value" style="color:var(--red)">422</div>
+        <div class="analytic-ref">ng/mL · ref: 27–375</div>
+        <div class="analytic-trend trend-danger">🔴 Subiendo 407→422</div>
+      </div>
+      <div class="analytic-card" style="border-left:3px solid var(--yellow)">
+        <div class="analytic-label">Vitamina D</div>
+        <div class="analytic-value" style="color:var(--yellow)">31,9</div>
+        <div class="analytic-ref">ng/mL · obj: >50</div>
+        <div class="analytic-trend trend-warn">⚠️ Insuficiencia leve</div>
+      </div>
+      <div class="analytic-card" style="border-left:3px solid var(--yellow)">
+        <div class="analytic-label">Eosinófilos</div>
+        <div class="analytic-value" style="color:var(--yellow)">9,2%</div>
+        <div class="analytic-ref">ref: 0,1–8,0%</div>
+        <div class="analytic-trend trend-warn">⚠️ Leve elevación</div>
+      </div>
+      <div class="analytic-card" style="border-left:3px solid var(--muted)">
+        <div class="analytic-label">Androstendiona</div>
+        <div class="analytic-value" style="color:var(--muted)">0,70</div>
+        <div class="analytic-ref">ng/mL · ref: 0,6–3,1</div>
+        <div class="analytic-trend">• Límite inferior</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Próxima analítica: solicitar transferrina + IST + control ferritina</div>
+</div>
+
+<!-- PAGE: NUTRITION -->
+<div class="page" id="page-nutrition">
+  <div class="page-header">
+    <div class="page-label">Registro diario</div>
+    <div class="page-title">ALIMENTACIÓN</div>
+    <div class="page-sub" id="nutr-date">—</div>
+  </div>
+
+  <!-- Balance -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Balance calórico de hoy</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+      <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Ingeridas</div>
+        <div style="font-size:24px;font-weight:700;color:var(--accent1)" id="n_total_in">0</div>
+        <div style="font-size:10px;color:var(--muted)">kcal</div>
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
+        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Quemadas cinta</div>
+        <div style="font-size:24px;font-weight:700;color:var(--accent2)" id="n_total_out">0</div>
+        <div style="font-size:10px;color:var(--muted)">kcal</div>
+      </div>
+    </div>
+    <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
+      <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Déficit neto</div>
+      <div style="font-size:28px;font-weight:700" id="n_deficit">—</div>
+      <div style="font-size:10px;color:var(--muted)">kcal · sin metabolismo basal (~2.100 kcal)</div>
+    </div>
+  </div>
+
+  <!-- DESAYUNO fijo -->
+  <div class="moment-block">
+    <div class="moment-title">
+      <span class="moment-emoji">🌅</span>
+      <span class="moment-name">Desayuno</span>
+      <span class="moment-time" id="des_total_lbl">0 kcal</span>
+    </div>
+    <div id="des_items"></div>
+    <div style="font-size:10px;color:var(--muted);margin-top:4px;padding-left:4px">Menú fijo — toca para marcar</div>
+  </div>
+
+  <!-- ALMUERZO -->
+  <div class="moment-block">
+    <div class="moment-title">
+      <span class="moment-emoji">🥪</span>
+      <span class="moment-name">Almuerzo</span>
+      <span class="moment-time" id="alm_total_lbl">0 kcal</span>
+    </div>
+    <div id="alm_items"></div>
+  </div>
+
+  <!-- COMIDA -->
+  <div class="moment-block">
+    <div class="moment-title">
+      <span class="moment-emoji">☀️</span>
+      <span class="moment-name">Comida</span>
+      <span class="moment-time" id="com_total_lbl">0 kcal</span>
+    </div>
+    <div id="com_items"></div>
+  </div>
+
+  <!-- CENA -->
+  <div class="moment-block">
+    <div class="moment-title">
+      <span class="moment-emoji">🌙</span>
+      <span class="moment-name">Cena</span>
+      <span class="moment-time" id="cen_total_lbl">0 kcal</span>
+    </div>
+    <div id="cen_items"></div>
+  </div>
+
+  <button class="btn-save" onclick="saveNutr()" style="margin-bottom:14px">✓ Guardar alimentación de hoy</button>
+
+  <!-- Historial -->
+  <div class="table-wrap">
+    <div class="table-head"><span id="nutr-count">Historial</span></div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Fecha</th><th>🌅</th><th>🥪</th><th>☀️</th><th>🌙</th><th>Total</th></tr></thead>
+        <tbody id="nutrBody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footer" style="margin-top:12px">Objetivo: 1.200–1.400 kcal · Déficit saludable: 500–700 kcal</div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="nav">
+  <button class="nav-btn active" id="nav-running" onclick="showPage('running')">
+    <span>🏃</span>Cinta
+  </button>
+  <button class="nav-btn" id="nav-nutrition" onclick="showPage('nutrition')">
+    <span>🍽️</span>Comida
+  </button>
+  <button class="nav-btn" id="nav-supps" onclick="showPage('supps')">
+    <span>💊</span>Suplementos
+  </button>
+  <button class="nav-btn" id="nav-analytics" onclick="showPage('analytics')">
+    <span>🧪</span>Analíticas
+  </button>
+</nav>
+
+<script>
+// ── DATA ────────────────────────────────────────────────
+const INITIAL = [
+  {fecha:"2026-04-27",tipo:"M",km:null,tiempo:60,calorias:264,pasos:6847},
+  {fecha:"2026-04-28",tipo:"M",km:null,tiempo:80,calorias:300,pasos:8000},
+  {fecha:"2026-04-29",tipo:"M",km:null,tiempo:90,calorias:30,pasos:8020},
+  {fecha:"2026-04-30",tipo:"M",km:null,tiempo:50,calorias:262,pasos:5676},
+  {fecha:"2026-04-30",tipo:"T",km:null,tiempo:30,calorias:140,pasos:3143},
+  {fecha:"2026-05-01",tipo:"M",km:null,tiempo:59,calorias:342,pasos:7050},
+  {fecha:"2026-05-02",tipo:"M",km:null,tiempo:70,calorias:350,pasos:9000},
+  {fecha:"2026-05-05",tipo:"M",km:null,tiempo:90,calorias:520,pasos:10700},
+  {fecha:"2026-05-11",tipo:"M",km:null,tiempo:63,calorias:369,pasos:7711},
+  {fecha:"2026-05-12",tipo:"M",km:6.6,tiempo:67,calorias:374,pasos:8032},
+  {fecha:"2026-05-13",tipo:"M",km:4.66,tiempo:45,calorias:298,pasos:5935},
+  {fecha:"2026-05-14",tipo:"M",km:4.25,tiempo:44,calorias:268,pasos:5417},
+  {fecha:"2026-05-23",tipo:"M",km:3.7,tiempo:42,calorias:230,pasos:5228},
+  {fecha:"2026-05-24",tipo:"M",km:5.09,tiempo:61,calorias:322,pasos:7221},
+  {fecha:"2026-05-25",tipo:"M",km:6.44,tiempo:95,calorias:408,pasos:8931},
+  {fecha:"2026-05-26",tipo:"M",km:6.4,tiempo:65,calorias:408,pasos:8122},
+  {fecha:"2026-05-27",tipo:"M",km:6.35,tiempo:70,calorias:403,pasos:8511},
+  {fecha:"2026-05-28",tipo:"M",km:3.15,tiempo:40,calorias:203,pasos:4100},
+  {fecha:"2026-05-28",tipo:"T",km:5.03,tiempo:63,calorias:314,pasos:7320},
+  {fecha:"2026-05-29",tipo:"M",km:6.2,tiempo:70,calorias:401,pasos:8374},
+  {fecha:"2026-05-29",tipo:"T",km:4.82,tiempo:62,calorias:301,pasos:7154},
+  {fecha:"2026-05-30",tipo:"M",km:6.17,tiempo:73,calorias:393,pasos:9548},
+  {fecha:"2026-05-30",tipo:"T",km:6.92,tiempo:81,calorias:436,pasos:7035},
+  {fecha:"2026-05-31",tipo:"M",km:4.9,tiempo:60,calorias:312,pasos:7035},
+  {fecha:"2026-05-31",tipo:"T",km:7.02,tiempo:79,calorias:440,pasos:9552},
+  {fecha:"2026-06-01",tipo:"M",km:5.9,tiempo:26,calorias:368,pasos:9046},
+  {fecha:"2026-06-01",tipo:"T",km:2.82,tiempo:31,calorias:183,pasos:4023},
+  {fecha:"2026-06-02",tipo:"M",km:4.72,tiempo:50,calorias:302,pasos:6141},
+  {fecha:"2026-06-02",tipo:"T",km:6.41,tiempo:75,calorias:402,pasos:9005},
+  {fecha:"2026-06-03",tipo:"M",km:4.1,tiempo:50,calorias:254,pasos:5900},
+];
+
+const SUPPS = ['vinagre-d','multi','d3k2','creatina','colageno-m','omega3','te','colageno-n','jengibre'];
+const TOTAL_SUPPS = SUPPS.length;
+
+let sessions = [];
+let currentTab = 'calorias';
+let currentTurno = 'M';
+let chart = null;
+
+// ── SUPABASE CONFIG ────────────────────────────────────
+const SUPABASE_URL = 'https://hbxtqheikpvppdaypxrb.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_jJDVN9EOhmBPELwo7dzZkg_VvUY5YUd';
+
+async function sbFetch(path, options = {}) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': options.prefer || 'return=representation',
+      ...options.headers
+    },
+    ...options
+  });
+  if (!res.ok) { const e = await res.text(); console.error('Supabase error:', e); return null; }
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function dbGetSessions() {
+  const data = await sbFetch('sesiones?order=fecha.asc,tipo.asc&select=*');
+  return data || [];
+}
+
+async function dbSaveSession(s) {
+  await sbFetch('sesiones', {
+    method: 'POST',
+    body: JSON.stringify({fecha:s.fecha, tipo:s.tipo, km:s.km, tiempo:s.tiempo, calorias:s.calorias, pasos:s.pasos})
+  });
+}
+
+async function dbDeleteSession(id) {
+  await sbFetch('sesiones?id=eq.' + id, { method: 'DELETE', prefer: '' });
+}
+
+async function dbGetNutr(fecha) {
+  const data = await sbFetch('nutricion?fecha=eq.' + fecha + '&select=*');
+  return data && data.length ? data[0] : null;
+}
+
+async function dbSaveNutr(fecha, des, alm, com, cen) {
+  const existing = await dbGetNutr(fecha);
+  if (existing) {
+    await sbFetch('nutricion?fecha=eq.' + fecha, {
+      method: 'PATCH',
+      body: JSON.stringify({desayuno:des, almuerzo:alm, comida:com, cena:cen})
+    });
+  } else {
+    await sbFetch('nutricion', {
+      method: 'POST',
+      body: JSON.stringify({fecha, desayuno:des, almuerzo:alm, comida:com, cena:cen})
+    });
+  }
+}
+
+async function dbGetAllNutr() {
+  const data = await sbFetch('nutricion?order=fecha.desc&select=*');
+  return data || [];
+}
+
+async function dbGetSuppState(fecha) {
+  const data = await sbFetch('suplementos?fecha=eq.' + fecha + '&select=*');
+  if (!data || !data.length) return {};
+  const state = {};
+  data.forEach(r => { state[r.suplemento] = r.tomado; });
+  return state;
+}
+
+async function dbToggleSupp(fecha, suplemento, tomado) {
+  const existing = await sbFetch('suplementos?fecha=eq.' + fecha + '&suplemento=eq.' + suplemento + '&select=*');
+  if (existing && existing.length) {
+    await sbFetch('suplementos?fecha=eq.' + fecha + '&suplemento=eq.' + suplemento, {
+      method: 'PATCH',
+      body: JSON.stringify({tomado})
+    });
+  } else {
+    await sbFetch('suplementos', {
+      method: 'POST',
+      body: JSON.stringify({fecha, suplemento, tomado})
+    });
+  }
+}
+
+// ── STORAGE ────────────────────────────────────────────
+function getTodayKey() { return new Date().toISOString().split('T')[0]; }
+
+function showLoading(msg) {
+  let el = document.getElementById('loading');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'loading';
+    el.style.cssText = 'position:fixed;top:0;left:0;right:0;background:var(--accent1);color:#fff;text-align:center;padding:8px;font-size:12px;font-family:monospace;z-index:999';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function hideLoading() {
+  const el = document.getElementById('loading');
+  if (el) el.style.display = 'none';
+}
+
+async function load() {
+  showLoading('⏳ Cargando datos...');
+  try {
+    const data = await dbGetSessions();
+    if (data.length === 0) {
+      // First time - load initial data
+      showLoading('⏳ Cargando datos iniciales...');
+      for (const s of INITIAL) { await dbSaveSession(s); }
+      sessions = [...INITIAL];
+    } else {
+      sessions = data;
+    }
+  } catch(e) {
+    console.error(e);
+    sessions = [...INITIAL];
+  }
+  hideLoading();
+  renderRunning();
+  renderSupps();
+  renderNutrition();
+}
+
+async function saveData() {
+  // sessions are saved individually via dbSaveSession
+}
+
+// Supabase-backed supp state
+let suppStateCache = {};
+
+async function getSuppState() {
+  const today = getTodayKey();
+  if (!suppStateCache[today]) {
+    suppStateCache[today] = await dbGetSuppState(today);
+  }
+  return suppStateCache[today] || {};
+}
+
+async function saveSuppState(id, tomado) {
+  const today = getTodayKey();
+  await dbToggleSupp(today, id, tomado);
+  if (!suppStateCache[today]) suppStateCache[today] = {};
+  suppStateCache[today][id] = tomado;
+}
+
+// ── NAVIGATION ────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+}
+
+// ── RUNNING ────────────────────────────────────────────
+function setTurno(t) {
+  currentTurno = t;
+  document.getElementById('btn_m').className = 'turno-btn' + (t==='M'?' am':'');
+  document.getElementById('btn_t').className = 'turno-btn' + (t==='T'?' pm':'');
+}
+
+function toggleForm() {
+  const fc = document.getElementById('formCard');
+  const open = fc.classList.toggle('open');
+  document.getElementById('btnToggle').textContent = open ? '✕' : '+ Sesión';
+  if (open) document.getElementById('f_fecha').value = getTodayKey();
+}
+
+async function saveSession() {
+  const fecha = document.getElementById('f_fecha').value;
+  const tiempo = parseInt(document.getElementById('f_tiempo').value);
+  const calorias = parseInt(document.getElementById('f_calorias').value);
+  if (!fecha || !tiempo || !calorias) { alert('Fecha, tiempo y calorías son obligatorios'); return; }
+  const newSession = {
+    fecha, tipo: currentTurno,
+    km: parseFloat(document.getElementById('f_km').value) || null,
+    tiempo, calorias,
+    pasos: parseInt(document.getElementById('f_pasos').value) || 0
+  };
+  showLoading('⏳ Guardando sesión...');
+  await dbSaveSession(newSession);
+  sessions = await dbGetSessions();
+  hideLoading();
+  ['f_fecha','f_km','f_tiempo','f_calorias','f_pasos'].forEach(id => document.getElementById(id).value = '');
+  toggleForm();
+  renderRunning();
+}
+
+async function deleteSession(id) {
+  if (!confirm('¿Eliminar?')) return;
+  showLoading('⏳ Eliminando...');
+  await dbDeleteSession(id);
+  sessions = await dbGetSessions();
+  hideLoading();
+  renderRunning();
+}
+
+function getDaily() {
+  const map = {};
+  sessions.forEach(s => {
+    if (!map[s.fecha]) map[s.fecha] = {fecha:s.fecha,km:0,tiempo:0,calorias:0,pasos:0};
+    map[s.fecha].km += s.km||0;
+    map[s.fecha].tiempo += s.tiempo||0;
+    map[s.fecha].calorias += s.calorias||0;
+    map[s.fecha].pasos += s.pasos||0;
+  });
+  return Object.values(map).sort((a,b) => a.fecha.localeCompare(b.fecha));
+}
+
+function fmtDate(d) { const p=d.split('-'); return p[2]+'/'+p[1]; }
+
+function renderRunning() {
+  const daily = getDaily();
+  const totKm = sessions.reduce((s,d)=>s+(d.km||0),0);
+  const totMin = sessions.reduce((s,d)=>s+d.tiempo,0);
+  const totCal = sessions.reduce((s,d)=>s+d.calorias,0);
+  document.getElementById('s_km').textContent = totKm.toFixed(1);
+  document.getElementById('s_tiempo').textContent = Math.floor(totMin/60)+'h '+(totMin%60)+'m';
+  document.getElementById('s_cal').textContent = totCal.toLocaleString('es');
+  document.getElementById('s_ses').textContent = sessions.length;
+  document.getElementById('s_dias').textContent = daily.length;
+  document.getElementById('s_avg').textContent = daily.length ? Math.round(totCal/daily.length) : 0;
+  renderChart(daily);
+  renderTable();
+}
+
+function renderChart(daily) {
+  const labels = daily.map(d=>fmtDate(d.fecha));
+  const ctx = document.getElementById('mainChart').getContext('2d');
+  if (chart) chart.destroy();
+  const base = { responsive:true, maintainAspectRatio:true,
+    plugins:{legend:{labels:{color:'#64748b',font:{family:'Courier New',size:10}}}},
+    scales:{
+      x:{ticks:{color:'#64748b',font:{size:9}},grid:{color:'#1e293b'}},
+      y:{ticks:{color:'#64748b',font:{size:9}},grid:{color:'#1e293b'}}
+    }
+  };
+  let type='bar', datasets=[];
+  if (currentTab==='calorias') {
+    datasets=[{label:'Calorías',data:daily.map(d=>d.calorias),backgroundColor:'rgba(249,115,22,0.7)',borderColor:'#f97316',borderWidth:1,borderRadius:4}];
+  } else if (currentTab==='tiempo') {
+    datasets=[{label:'Tiempo (min)',data:daily.map(d=>d.tiempo),backgroundColor:'rgba(56,189,248,0.7)',borderColor:'#38bdf8',borderWidth:1,borderRadius:4}];
+  } else if (currentTab==='km') {
+    type='line';
+    datasets=[{label:'KM',data:daily.map(d=>d.km),borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.1)',fill:true,tension:0.3,pointBackgroundColor:'#a78bfa',pointRadius:3}];
+  } else {
+    type='line';
+    base.scales.y1={position:'right',ticks:{color:'#a78bfa',font:{size:9}},grid:{drawOnChartArea:false}};
+    datasets=[
+      {label:'Calorías',data:daily.map(d=>d.calorias),borderColor:'#f97316',backgroundColor:'rgba(249,115,22,0.1)',fill:true,tension:0.3,yAxisID:'y',pointRadius:2},
+      {label:'KM',data:daily.map(d=>d.km),borderColor:'#a78bfa',backgroundColor:'transparent',tension:0.3,yAxisID:'y1',pointRadius:2}
+    ];
+  }
+  chart = new Chart(ctx, {type, data:{labels,datasets}, options:base});
+}
+
+function renderTable() {
+  const rev = [...sessions].sort((a,b) => b.fecha.localeCompare(a.fecha) || (b.tipo||'').localeCompare(a.tipo||''));
+  document.getElementById('tableCount').textContent = `Sesiones (${sessions.length})`;
+  document.getElementById('tableBody').innerHTML = rev.map((s,i) => `
+    <tr>
+      <td style="color:var(--text)">${fmtDate(s.fecha)}</td>
+      <td><span class="badge ${s.tipo==='M'?'badge-m':'badge-t'}">${s.tipo==='M'?'🌅':'🌆'} ${s.tipo}</span></td>
+      <td style="color:var(--accent3)">${s.km?s.km.toFixed(2):'—'}</td>
+      <td style="color:var(--accent2)">${s.tiempo}</td>
+      <td style="color:var(--accent1);font-weight:700">${s.calorias}</td>
+      <td><button class="btn-del" onclick="deleteSession(${s.id})">✕</button></td>
+    </tr>`).join('');
+}
+
+function switchTab(el, tab) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  currentTab = tab;
+  renderChart(getDaily());
+}
+
+function exportCSV() {
+  const rows=[['Fecha','Turno','KM','Tiempo','Calorias','Pasos']];
+  sessions.forEach(s=>rows.push([s.fecha,s.tipo,s.km||'',s.tiempo,s.calorias,s.pasos]));
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(rows.map(r=>r.join(',')).join('\n'));
+  a.download='cinta_tracker.csv'; a.click();
+}
+
+// ── SUPPLEMENTS ────────────────────────────────────────
+async function renderSupps() {
+  const state = await getSuppState();
+  const today = new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('supp-date').textContent = today.charAt(0).toUpperCase()+today.slice(1);
+  let checked = 0;
+  SUPPS.forEach(id => {
+    const card = document.getElementById('sc-'+id);
+    const chk = document.getElementById('chk-'+id);
+    if (state[id]) {
+      card.classList.add('checked');
+      chk.textContent = '✓';
+      checked++;
+    } else {
+      card.classList.remove('checked');
+      chk.textContent = '';
+    }
+  });
+  const pct = Math.round((checked/TOTAL_SUPPS)*100);
+  document.getElementById('supp-progress-bar').style.width = pct+'%';
+  document.getElementById('supp-progress-label').textContent = checked+'/'+TOTAL_SUPPS;
+}
+
+async function toggleSupp(id) {
+  const state = await getSuppState();
+  const newVal = !state[id];
+  await saveSuppState(id, newVal);
+  renderSupps();
+}
+
+async function resetSupps() {
+  if (!confirm('¿Reiniciar el checklist de hoy?')) return;
+  showLoading('⏳ Reiniciando...');
+  const today = getTodayKey();
+  for (const id of SUPPS) { await dbToggleSupp(today, id, false); }
+  if (suppStateCache[today]) suppStateCache[today] = {};
+  hideLoading();
+  renderSupps();
+}
+
+
+// ── NUTRITION ────────────────────────────────────────────
+
+const FOOD_DB = {
+  desayuno: [
+    {id:'d1', name:'Bebida almendra', qty:'300 ml', kcal:45},
+    {id:'d2', name:'Cacao puro', qty:'1 cucharada', kcal:20},
+    {id:'d3', name:'Miel ecológica', qty:'1 cucharadita', kcal:45},
+    {id:'d4', name:'Almendras / nueces', qty:'25g', kcal:155},
+  ],
+  almuerzo: [
+    {id:'a1', name:'Jamón serrano', qty:'2 lonchas finas (~30g)', kcal:60},
+    {id:'a2', name:'Huevo duro', qty:'1 unidad', kcal:70},
+  ],
+  comida: [
+    {id:'c1', name:'Pollo desmenuzado', qty:'150g', kcal:165},
+    {id:'c2', name:'Pimientos + cebolla salteados', qty:'100g', kcal:60},
+    {id:'c3', name:'Lentejas', qty:'200g cocidas', kcal:220},
+    {id:'c4', name:'Judías pintas', qty:'200g cocidas', kcal:210},
+    {id:'c5', name:'Ensalada tomate + rúcula + albahaca', qty:'150g', kcal:40},
+    {id:'c6', name:'Aceite de oliva', qty:'10 ml', kcal:90},
+    {id:'c7', name:'Vinagre de manzana', qty:'10 ml', kcal:3},
+    {id:'c8', name:'Sal + pimienta', qty:'al gusto', kcal:0},
+  ],
+  cena: [
+    {id:'n1', name:'Huevos duros', qty:'3 huevos', kcal:210},
+    {id:'n2', name:'Huevos duros', qty:'4 huevos', kcal:280},
+    {id:'n3', name:'Ensalada tomate + rúcula + orégano', qty:'150g', kcal:40},
+    {id:'n4', name:'Aceite de oliva', qty:'10 ml', kcal:90},
+    {id:'n5', name:'Vinagre de manzana', qty:'10 ml', kcal:3},
+    {id:'n6', name:'Sal + pimienta', qty:'al gusto', kcal:0},
+    {id:'n7', name:'Espárragos', qty:'100g', kcal:25},
+    {id:'n8', name:'Atún lata', qty:'80g', kcal:90},
+    {id:'n9', name:'Mejillones lata', qty:'80g', kcal:90},
+    {id:'n10', name:'Sardinas lata', qty:'80g', kcal:160},
+    {id:'n11', name:'Pulpo lata', qty:'80g', kcal:70},
+    {id:'n12', name:'Aquarius', qty:'330 ml', kcal:66},
+    {id:'n13', name:'Appletiser', qty:'330 ml', kcal:75},
+    {id:'n14', name:'Almendras', qty:'10 unidades (~14g)', kcal:82},
+    {id:'n15', name:'Nueces', qty:'5 mitades (~12g)', kcal:80},
+    {id:'n16', name:'Pasas', qty:'10 unidades (~16g)', kcal:48},
+    {id:'n17', name:'Arándanos secos', qty:'10 unidades (~14g)', kcal:47},
+    {id:'n18', name:'Dátiles grandes', qty:'3 unidades (~36g)', kcal:100},
+    {id:'n19', name:'Ciruelas pasas', qty:'5 unidades (~40g)', kcal:96},
+  ]
+};
+
+function getNutrState() {
+  const s = localStorage.getItem('nutr_state_' + getTodayKey());
+  return s ? JSON.parse(s) : {};
+}
+
+function getNutrData() {
+  const s = localStorage.getItem('nutr_data');
+  return s ? JSON.parse(s) : {};
+}
+
+function saveNutrData(data) {
+  localStorage.setItem('nutr_data', JSON.stringify(data));
+}
+
+function toggleFood(id) {
+  const state = getNutrState();
+  setNutrState(id, !state[id]);
+  renderNutrition();
+}
+
+function calcMealTotal(meal, state) {
+  return FOOD_DB[meal].filter(f => state[f.id]).reduce((s, f) => s + f.kcal, 0);
+}
+
+function renderFoodList(containerId, meal, state, fixed) {
+  const el = document.getElementById(containerId);
+  el.innerHTML = FOOD_DB[meal].map(f => `
+    <div class="supp-card ${state[f.id] ? 'checked' : ''}" onclick="toggleFood('${f.id}')">
+      <div class="supp-check" id="fchk-${f.id}">${state[f.id] ? '✓' : ''}</div>
+      <div class="supp-info">
+        <div class="supp-name">${f.name}</div>
+        <div style="display:flex;justify-content:space-between;margin-top:3px">
+          <span class="supp-why">${f.qty}</span>
+          <span style="color:var(--accent1);font-weight:700;font-size:12px">${f.kcal} kcal</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function getTodayBurnedCal() {
+  const today = getTodayKey();
+  return sessions.filter(s => s.fecha === today).reduce((sum, s) => sum + s.calorias, 0);
+}
+
+async function saveNutr() {
+  const state = getNutrState();
+  const des = calcMealTotal('desayuno', state);
+  const alm = calcMealTotal('almuerzo', state);
+  const com = calcMealTotal('comida', state);
+  const cen = calcMealTotal('cena', state);
+  const total = des + alm + com + cen;
+  if (!total) { alert('Marca al menos un alimento'); return; }
+  showLoading('⏳ Guardando alimentación...');
+  await dbSaveNutr(getTodayKey(), des, alm, com, cen);
+  hideLoading();
+  renderNutrHistory();
+  alert('✓ Guardado');
+}
+
+async function renderNutrHistory() {
+  const entries = await dbGetAllNutr();
+  document.getElementById('nutr-count').textContent = 'Historial (' + entries.length + ' días)';
+  document.getElementById('nutrBody').innerHTML = entries.map((v) => {
+    const total = (v.desayuno||0) + (v.almuerzo||0) + (v.comida||0) + (v.cena||0);
+    const f = v.fecha.split('-');
+    return `<tr>
+      <td style="color:var(--text)">${f[2]}/${f[1]}</td>
+      <td style="color:var(--accent1)">${v.desayuno||'—'}</td>
+      <td style="color:var(--accent2)">${v.almuerzo||'—'}</td>
+      <td style="color:var(--yellow)">${v.comida||'—'}</td>
+      <td style="color:var(--accent3)">${v.cena||'—'}</td>
+      <td style="color:var(--text);font-weight:700">${total}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function renderNutrition() {
+  const today = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
+  document.getElementById('nutr-date').textContent = today.charAt(0).toUpperCase() + today.slice(1);
+  const todayNutr = await dbGetNutr(getTodayKey());
+  if (todayNutr && !nutrStateCache[getTodayKey()]) {
+    nutrStateCache[getTodayKey()] = {};
+  }
+  const state = getNutrState();
+  renderFoodList('des_items', 'desayuno', state, true);
+  renderFoodList('alm_items', 'almuerzo', state, false);
+  renderFoodList('com_items', 'comida', state, false);
+  renderFoodList('cen_items', 'cena', state, false);
+  const des = calcMealTotal('desayuno', state);
+  const alm = calcMealTotal('almuerzo', state);
+  const com = calcMealTotal('comida', state);
+  const cen = calcMealTotal('cena', state);
+  const total = des + alm + com + cen;
+  document.getElementById('des_total_lbl').textContent = des + ' kcal';
+  document.getElementById('alm_total_lbl').textContent = alm + ' kcal';
+  document.getElementById('com_total_lbl').textContent = com + ' kcal';
+  document.getElementById('cen_total_lbl').textContent = cen + ' kcal';
+  document.getElementById('n_total_in').textContent = total;
+  const burned = getTodayBurnedCal();
+  document.getElementById('n_total_out').textContent = burned;
+  const deficit = total - burned;
+  const el = document.getElementById('n_deficit');
+  if (total === 0) { el.textContent = '—'; el.style.color = 'var(--muted)'; }
+  else {
+    el.textContent = (deficit > 0 ? '+' : '') + deficit;
+    el.style.color = deficit <= 0 ? 'var(--green)' : 'var(--red)';
+  }
+  renderNutrHistory();
+}
+
+load();
+</script>
+</body>
+</html>
