@@ -969,18 +969,17 @@ const FOOD_DB = {
   ]
 };
 
+let nutrStateCache = {};
+
 function getNutrState() {
-  const s = localStorage.getItem('nutr_state_' + getTodayKey());
-  return s ? JSON.parse(s) : {};
+  const today = getTodayKey();
+  return nutrStateCache[today] || {};
 }
 
-function getNutrData() {
-  const s = localStorage.getItem('nutr_data');
-  return s ? JSON.parse(s) : {};
-}
-
-function saveNutrData(data) {
-  localStorage.setItem('nutr_data', JSON.stringify(data));
+function setNutrState(id, val) {
+  const today = getTodayKey();
+  if (!nutrStateCache[today]) nutrStateCache[today] = {};
+  nutrStateCache[today][id] = val;
 }
 
 function toggleFood(id) {
