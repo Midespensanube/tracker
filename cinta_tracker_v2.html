@@ -554,7 +554,7 @@
     <div class="table-head"><span id="nutr-count">Historial</span></div>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>Fecha</th><th>🌅</th><th>🥪</th><th>☀️</th><th>🌙</th><th>Total</th></tr></thead>
+        <thead><tr><th>Fecha</th><th>🍽️ Ing.</th><th>🏃 Quem.</th><th>⚖️ Déficit</th></tr></thead>
         <tbody id="nutrBody"></tbody>
       </table>
     </div>
@@ -1110,17 +1110,22 @@ async function saveNutr() {
 
 async function renderNutrHistory() {
   const entries = await dbGetAllNutr();
+  const daily = getDaily();
+  const dailyMap = {};
+  daily.forEach(d => { dailyMap[d.fecha] = d.calorias; });
   document.getElementById('nutr-count').textContent = 'Historial (' + entries.length + ' días)';
   document.getElementById('nutrBody').innerHTML = entries.map((v) => {
-    const total = (v.desayuno||0) + (v.almuerzo||0) + (v.comida||0) + (v.cena||0);
+    const ingeridas = (v.desayuno||0) + (v.almuerzo||0) + (v.comida||0) + (v.cena||0);
+    const quemadas = dailyMap[v.fecha] || 0;
+    const deficit = ingeridas - quemadas;
     const f = v.fecha.split('-');
+    const defColor = deficit <= 0 ? 'var(--green)' : 'var(--red)';
+    const defText = deficit === 0 ? '0' : (deficit > 0 ? '+' + deficit : deficit);
     return `<tr>
       <td style="color:var(--text)">${f[2]}/${f[1]}</td>
-      <td style="color:var(--accent1)">${v.desayuno||'—'}</td>
-      <td style="color:var(--accent2)">${v.almuerzo||'—'}</td>
-      <td style="color:var(--yellow)">${v.comida||'—'}</td>
-      <td style="color:var(--accent3)">${v.cena||'—'}</td>
-      <td style="color:var(--text);font-weight:700">${total}</td>
+      <td style="color:var(--accent1);font-weight:700">${ingeridas || '—'}</td>
+      <td style="color:var(--accent2);font-weight:700">${quemadas || '—'}</td>
+      <td style="color:${defColor};font-weight:700">${ingeridas ? defText : '—'}</td>
     </tr>`;
   }).join('');
 }
