@@ -188,6 +188,33 @@
     </div>
   </div>
 
+  <!-- Balance calórico en Cinta -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Balance calórico de hoy</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+      <div style="background:var(--bg);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:9px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Ingeridas</div>
+        <div style="font-size:20px;font-weight:700;color:#f97316" id="c_total_in">—</div>
+        <div style="font-size:10px;color:#94a3b8">kcal</div>
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:9px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Cinta</div>
+        <div style="font-size:20px;font-weight:700;color:#38bdf8" id="c_total_out">—</div>
+        <div style="font-size:10px;color:#94a3b8">kcal</div>
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:9px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Basal</div>
+        <div style="font-size:20px;font-weight:700;color:#a78bfa">1.976</div>
+        <div style="font-size:10px;color:#94a3b8">kcal fijo</div>
+      </div>
+    </div>
+    <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
+      <div style="font-size:9px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Déficit real</div>
+      <div style="font-size:28px;font-weight:700" id="c_deficit">—</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">Gasto total: <span id="c_gasto_total">—</span> kcal · Obj: −1.155 kcal</div>
+    </div>
+  </div>
+
   <!-- Objetivo cinta hoy -->
   <div class="card" style="margin-bottom:14px" id="cinta-objetivo-card">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
@@ -208,12 +235,6 @@
   </div>
 
   <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
-
-  <!-- Balance calórico en Cinta -->
-  <div class="card" style="margin-bottom:14px">
-    <div class="card-title">Balance calórico diario</div>
-    <canvas id="balanceChart2" style="max-height:200px"></canvas>
-  </div>
 
   <div class="table-wrap">
     <div class="table-head">
@@ -1392,7 +1413,25 @@ async function renderBalanceChart() {
   const todayLabel = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
 
   // Update balance card
-  ['balanceChart','balanceChart2'].forEach(id => {
+  // Update cinta page balance
+  const todayNutrCinta = await dbGetNutr(today);
+  const ingrCinta = todayNutrCinta ? (todayNutrCinta.desayuno||0)+(todayNutrCinta.almuerzo||0)+(todayNutrCinta.comida||0)+(todayNutrCinta.cena||0) : 0;
+  const quemCinta = todaySessions ? todaySessions.calorias : 0;
+  const gastoCinta = quemCinta + 1976;
+  const defCinta = ingrCinta - gastoCinta;
+  const cIn = document.getElementById('c_total_in');
+  const cOut = document.getElementById('c_total_out');
+  const cDef = document.getElementById('c_deficit');
+  const cGasto = document.getElementById('c_gasto_total');
+  if (cIn) cIn.textContent = ingrCinta || '—';
+  if (cOut) cOut.textContent = quemCinta || '—';
+  if (cGasto) cGasto.textContent = gastoCinta;
+  if (cDef) {
+    cDef.textContent = ingrCinta === 0 ? '—' : (defCinta > 0 ? '+' : '') + defCinta;
+    cDef.style.color = defCinta <= -1155 ? '#34d399' : defCinta <= 0 ? '#fbbf24' : '#ef4444';
+  }
+
+  ['balanceChart'].forEach(id => {
     const canvas = document.getElementById(id);
     if (!canvas) return;
     const parent = canvas.parentElement;
