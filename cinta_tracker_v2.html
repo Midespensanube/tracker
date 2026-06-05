@@ -1632,8 +1632,9 @@ async function renderPeso() {
   const data = await dbGetPeso();
   if (!data.length) return;
 
-  // Set today's date in input
-  document.getElementById('p_fecha').value = getTodayKey();
+  // Set today's date in input (only if exists)
+  const pFecha = document.getElementById('p_fecha');
+  if (pFecha) pFecha.value = getTodayKey();
 
   const ultimo = data[data.length - 1];
   const pesoActual = parseFloat(ultimo.kg);
