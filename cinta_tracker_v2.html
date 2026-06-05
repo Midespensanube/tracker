@@ -148,6 +148,7 @@
       <div class="fg"><label>Tiempo (min) *</label><input type="number" placeholder="60" id="f_tiempo"></div>
       <div class="fg"><label>Calorías *</label><input type="number" placeholder="350" id="f_calorias"></div>
       <div class="fg" style="grid-column:span 2"><label>Pasos</label><input type="number" placeholder="8000" id="f_pasos"></div>
+      <div class="fg" style="grid-column:span 2"><label>Nota (opcional)</label><input type="text" placeholder="Ej: Descanso, Op. mano derecha..." id="f_nota"></div>
     </div>
     <div class="turno-row">
       <button class="turno-btn am" id="btn_m" onclick="setTurno('M')">🌅 Mañana</button>
@@ -209,7 +210,7 @@
     </div>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>Fecha</th><th>T</th><th>KM</th><th>Min</th><th>Cal</th><th>Pasos</th><th></th></tr></thead>
+        <thead><tr><th>Fecha</th><th>T</th><th>KM</th><th>Min</th><th>Cal</th><th>Pasos</th><th>Nota</th><th></th></tr></thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
@@ -681,7 +682,7 @@ async function dbSaveSession(s) {
   await sbFetch('Sesiones', {
     method: 'POST',
     upsert: true,
-    body: JSON.stringify({fecha:s.fecha, tipo:s.tipo, km:s.km, tiempo:s.tiempo, calorias:s.calorias, pasos:s.pasos})
+    body: JSON.stringify({fecha:s.fecha, tipo:s.tipo, km:s.km, tiempo:s.tiempo, calorias:s.calorias, pasos:s.pasos, nota:s.nota||null})
   });
 }
 
@@ -864,18 +865,19 @@ async function saveSession() {
   const fecha = document.getElementById('f_fecha').value;
   const tiempo = parseInt(document.getElementById('f_tiempo').value);
   const calorias = parseInt(document.getElementById('f_calorias').value);
-  if (!fecha || !tiempo || !calorias) { alert('Fecha, tiempo y calorías son obligatorios'); return; }
+  if (!fecha) { alert('La fecha es obligatoria'); return; }
   const newSession = {
     fecha, tipo: currentTurno,
     km: parseFloat(document.getElementById('f_km').value) || null,
     tiempo, calorias,
-    pasos: parseInt(document.getElementById('f_pasos').value) || 0
+    pasos: parseInt(document.getElementById('f_pasos').value) || 0,
+    nota: document.getElementById('f_nota').value.trim() || null
   };
   showLoading('⏳ Guardando sesión...');
   await dbSaveSession(newSession);
   sessions = await dbGetSessions();
   hideLoading();
-  ['f_fecha','f_km','f_tiempo','f_calorias','f_pasos'].forEach(id => document.getElementById(id).value = '');
+  ['f_fecha','f_km','f_tiempo','f_calorias','f_pasos','f_nota'].forEach(id => document.getElementById(id).value = '');
   toggleForm();
   renderRunning();
 }
@@ -962,6 +964,7 @@ function renderTable() {
       <td style="color:var(--accent2)">${s.tiempo}</td>
       <td style="color:var(--accent1);font-weight:700">${s.calorias}</td>
       <td style="color:var(--green)">${s.pasos?s.pasos.toLocaleString('es'):'—'}</td>
+      <td style="color:var(--muted);font-size:11px">${s.nota||'—'}</td>
       <td><button class="btn-del" data-fecha="${s.fecha}" data-tipo="${s.tipo}" onclick="deleteSession(this.dataset.fecha, this.dataset.tipo)">✕</button></td>
     </tr>`).join('');
 }
