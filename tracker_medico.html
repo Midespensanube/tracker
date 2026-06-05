@@ -2,12 +2,12 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Armando Tracker">
 <meta name="theme-color" content="#0a0f1e">
-<title>Armando Saavedra — Tracker Médico</title>
+<title>Armando Saavedra — Informe Médico</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -21,15 +21,15 @@
     --green: #34d399;
     --pink: #f472b6;
     --yellow: #fbbf24;
-    --text: #f1f5f9;
-    --muted: #64748b;
+    --text: #ffffff;
+    --muted: #94a3b8;
     --red: #ef4444;
   }
   body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; min-height: 100vh; padding-bottom: 80px; }
 
   /* NAV */
   .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0d1424; border-top: 1px solid var(--border); display: flex; z-index: 100; }
-  .nav-btn { flex: 1; padding: 12px 4px 10px; background: none; border: none; color: var(--muted); cursor: pointer; font-family: monospace; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color 0.2s; }
+  .nav-btn { flex: 1; padding: 12px 4px 10px; background: none; border: none; color: #94a3b8; cursor: pointer; font-family: monospace; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color 0.2s; font-weight: 600; }
   .nav-btn.active { color: var(--accent1); }
   .nav-btn span { font-size: 18px; }
 
@@ -39,23 +39,23 @@
 
   /* HEADER */
   .page-header { margin-bottom: 20px; }
-  .page-label { color: var(--accent1); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 2px; }
+  .page-label { color: var(--accent1); font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 2px; font-weight: 700; }
   .page-title { font-size: 22px; font-weight: 900; }
-  .page-sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .page-sub { color: #cbd5e1; font-size: 13px; margin-top: 2px; }
 
   /* CARDS */
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-  .card-title { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+  .card-title { font-size: 12px; letter-spacing: 2px; color: #ffffff; text-transform: uppercase; margin-bottom: 12px; font-weight: 700; }
 
   /* STATS */
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
   .stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 11px; }
-  .stat-label { color: var(--muted); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
-  .stat-value { font-size: 17px; font-weight: 700; }
+  .stat-label { color: #ffffff; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; font-weight: 600; }
+  .stat-value { font-size: 20px; font-weight: 700; }
 
   /* TABS */
   .tabs { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; }
-  .tab { padding: 7px 13px; border-radius: 6px; cursor: pointer; font-family: monospace; font-size: 12px; border: 1px solid var(--border); background: transparent; color: var(--muted); white-space: nowrap; }
+  .tab { padding: 8px 14px; border-radius: 6px; cursor: pointer; font-family: monospace; font-size: 13px; border: 1px solid var(--border); background: transparent; color: #94a3b8; white-space: nowrap; font-weight: 600; }
   .tab.active { background: var(--card); color: var(--text); font-weight: 700; border-color: var(--accent1); }
 
   /* CHART */
@@ -66,10 +66,10 @@
   .form-card { background: var(--card); border: 1px solid var(--accent1); border-radius: 12px; padding: 16px; margin-bottom: 14px; display: none; }
   .form-card.open { display: block; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .fg label { display: block; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .fg label { display: block; font-size: 10px; color: var(--text); margin-bottom: 4px; }
   .fg input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 10px; color: var(--text); font-family: monospace; font-size: 13px; }
   .turno-row { display: flex; gap: 8px; margin-top: 10px; }
-  .turno-btn { flex: 1; padding: 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); font-family: monospace; font-weight: 700; cursor: pointer; font-size: 13px; }
+  .turno-btn { flex: 1; padding: 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: monospace; font-weight: 700; cursor: pointer; font-size: 13px; }
   .turno-btn.am { border-color: var(--accent1); background: rgba(249,115,22,0.15); color: var(--accent1); }
   .turno-btn.pm { border-color: var(--accent2); background: rgba(56,189,248,0.15); color: var(--accent2); }
   .btn-save { background: var(--green); color: #0a0f1e; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700; font-family: monospace; cursor: pointer; width: 100%; margin-top: 12px; }
@@ -78,22 +78,22 @@
 
   /* TABLE */
   .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
-  .table-head { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+  .table-head { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 10px; letter-spacing: 2px; color: var(--text); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
   .table-scroll { max-height: 260px; overflow-y: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th { padding: 7px 10px; text-align: left; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); font-size: 10px; }
+  th { padding: 7px 10px; text-align: left; color: var(--text); font-weight: 600; border-bottom: 1px solid var(--border); font-size: 10px; }
   td { padding: 7px 10px; border-bottom: 1px solid rgba(30,41,59,0.4); }
   .badge { border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: 700; }
   .badge-m { background: rgba(249,115,22,0.2); color: var(--accent1); }
   .badge-t { background: rgba(56,189,248,0.2); color: var(--accent2); }
-  .btn-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 2px 5px; }
+  .btn-del { background: none; border: none; color: var(--text); cursor: pointer; font-size: 13px; padding: 2px 5px; }
 
   /* SUPPLEMENTS */
   .moment-block { margin-bottom: 20px; }
   .moment-title { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .moment-emoji { font-size: 20px; }
   .moment-name { font-size: 14px; font-weight: 700; color: var(--text); }
-  .moment-time { font-size: 11px; color: var(--muted); margin-left: auto; background: var(--border); padding: 3px 8px; border-radius: 20px; }
+  .moment-time { font-size: 11px; color: var(--text); margin-left: auto; background: var(--border); padding: 3px 8px; border-radius: 20px; }
 
   .supp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 14px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px; cursor: pointer; transition: border-color 0.2s; }
   .supp-card.checked { border-color: var(--green); background: rgba(52,211,153,0.05); }
@@ -102,31 +102,31 @@
   .supp-info { flex: 1; }
   .supp-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
   .supp-dose { font-size: 11px; color: var(--accent1); margin-bottom: 4px; font-weight: 700; }
-  .supp-why { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .supp-why { font-size: 11px; color: var(--text); line-height: 1.5; }
   .supp-alert { font-size: 10px; color: var(--yellow); margin-top: 4px; }
 
   .progress-bar-wrap { background: var(--border); border-radius: 20px; height: 6px; margin: 12px 0 4px; }
   .progress-bar { background: var(--green); border-radius: 20px; height: 6px; transition: width 0.4s; }
-  .progress-label { font-size: 10px; color: var(--muted); text-align: right; }
+  .progress-label { font-size: 10px; color: var(--text); text-align: right; }
 
-  .reset-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 8px 14px; font-family: monospace; font-size: 11px; cursor: pointer; width: 100%; margin-top: 4px; }
+  .reset-btn { background: none; border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 8px 14px; font-family: monospace; font-size: 11px; cursor: pointer; width: 100%; margin-top: 4px; }
 
   /* ANALYTICS */
   .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
   .analytic-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px; }
-  .analytic-label { font-size: 9px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .analytic-label { font-size: 9px; color: var(--text); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
   .analytic-value { font-size: 20px; font-weight: 700; }
-  .analytic-ref { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .analytic-ref { font-size: 10px; color: var(--text); margin-top: 2px; }
   .analytic-trend { font-size: 10px; margin-top: 4px; }
   .trend-up { color: var(--green); }
   .trend-warn { color: var(--yellow); }
   .trend-danger { color: var(--red); }
 
-  .footer { text-align: center; color: var(--muted); font-size: 10px; margin-top: 16px; letter-spacing: 1px; padding: 0 16px; }
+  .footer { text-align: center; color: var(--text); font-size: 10px; margin-top: 16px; letter-spacing: 1px; padding: 0 16px; }
 </style>
 </head>
 <body>
-<div style="background:#1e293b;color:#64748b;text-align:center;padding:8px;font-size:11px;font-family:monospace;letter-spacing:1px">
+<div style="background:#1e293b;color:#94a3b8;text-align:center;padding:10px;font-size:12px;font-family:monospace;letter-spacing:1px;font-weight:700">
   👁 MODO SOLO LECTURA · Informe médico · Armando Saavedra Cabrera
 </div>
 
@@ -143,7 +143,15 @@
     </div>
   </div>
 
-      <div class="turno-row">
+      <div class="form-grid">
+      <div class="fg"><label>Fecha *</label><input type="date" id="f_fecha"></div>
+      <div class="fg"><label>Kilómetros</label><input type="number" step="0.01" placeholder="5.50" id="f_km"></div>
+      <div class="fg"><label>Tiempo (min) *</label><input type="number" placeholder="60" id="f_tiempo"></div>
+      <div class="fg"><label>Calorías *</label><input type="number" placeholder="350" id="f_calorias"></div>
+      <div class="fg" style="grid-column:span 2"><label>Pasos</label><input type="number" placeholder="8000" id="f_pasos"></div>
+      <div class="fg" style="grid-column:span 2"><label>Nota (opcional)</label><input type="text" placeholder="Ej: Descanso, Op. mano derecha..." id="f_nota"></div>
+    </div>
+    <div class="turno-row">
       <button class="turno-btn am" id="btn_m" onclick="setTurno('M')">🌅 Mañana</button>
       <button class="turno-btn" id="btn_t" onclick="setTurno('T')">🌆 Tarde</button>
     </div>
@@ -175,6 +183,10 @@
       <div class="stat-label">Cal/día</div>
       <div class="stat-value" style="color:var(--yellow)" id="s_avg">—</div>
     </div>
+    <div class="stat" style="border-left:3px solid #34d399;grid-column:span 3">
+      <div class="stat-label">Pasos totales</div>
+      <div class="stat-value" style="color:#34d399" id="s_pasos">—</div>
+    </div>
   </div>
 
   <div class="tabs">
@@ -186,14 +198,20 @@
 
   <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
 
+  <!-- Balance calórico en Cinta -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Balance calórico diario</div>
+    <canvas id="balanceChart2" style="max-height:200px"></canvas>
+  </div>
+
   <div class="table-wrap">
     <div class="table-head">
       <span id="tableCount">Sesiones</span>
-      
+      <button onclick="exportCSV()" style="background:none;border:1px solid var(--border);color:var(--text);border-radius:5px;padding:4px 10px;cursor:pointer;font-size:10px;font-family:monospace;">↓ CSV</button>
     </div>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>Fecha</th><th>T</th><th>KM</th><th>Min</th><th>Cal</th><th></th></tr></thead>
+        <thead><tr><th>Fecha</th><th>T</th><th>KM</th><th>Min</th><th>Cal</th><th>Pasos</th><th>Nota</th></tr></thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
@@ -319,6 +337,15 @@
   </div>
 
   
+
+  <!-- Historial suplementos -->
+  <div class="table-wrap" style="margin-top:16px">
+    <div class="table-head"><span>Historial de suplementos</span></div>
+    <div class="table-scroll" id="suppHistoryBody" style="max-height:300px;overflow-y:auto;padding:8px 14px">
+      <div style="color:var(--muted);font-size:12px;padding:8px">Cargando...</div>
+    </div>
+  </div>
+
   <div class="footer" style="margin-top:12px">Toca cada suplemento para marcarlo como tomado</div>
 </div>
 
@@ -334,11 +361,11 @@
     <div class="card-title">🔴 Alertas activas</div>
     <div style="background:rgba(239,68,68,0.1);border:1px solid var(--red);border-radius:8px;padding:12px;margin-bottom:10px">
       <div style="color:var(--red);font-weight:700;font-size:13px;margin-bottom:4px">Ferritina 422 ng/mL</div>
-      <div style="font-size:11px;color:var(--muted)">Límite: 375 ng/mL · Subiendo: 407→422 · Solicitar transferrina + IST urgente. Valorar retomar donación de sangre.</div>
+      <div style="font-size:11px;color:var(--text)">Límite: 375 ng/mL · Subiendo: 407→422 · Solicitar transferrina + IST urgente. Valorar retomar donación de sangre.</div>
     </div>
     <div style="background:rgba(251,191,36,0.1);border:1px solid var(--yellow);border-radius:8px;padding:12px">
       <div style="color:var(--yellow);font-weight:700;font-size:13px;margin-bottom:4px">Vitamina D 31,9 ng/mL</div>
-      <div style="font-size:11px;color:var(--muted)">Insuficiencia leve. Necesitas >50 ng/mL. D3+K2 4.000 UI activo. Control en 3 meses.</div>
+      <div style="font-size:11px;color:var(--text)">Insuficiencia leve. Necesitas >50 ng/mL. D3+K2 4.000 UI activo. Control en 3 meses.</div>
     </div>
   </div>
 
@@ -425,7 +452,7 @@
       </div>
       <div class="analytic-card" style="border-left:3px solid var(--muted)">
         <div class="analytic-label">Androstendiona</div>
-        <div class="analytic-value" style="color:var(--muted)">0,70</div>
+        <div class="analytic-value" style="color:var(--text)">0,70</div>
         <div class="analytic-ref">ng/mL · ref: 0,6–3,1</div>
         <div class="analytic-trend">• Límite inferior</div>
       </div>
@@ -448,20 +475,20 @@
     <div class="card-title">Balance calórico de hoy</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
       <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Ingeridas</div>
+        <div style="font-size:9px;color:var(--text);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Ingeridas</div>
         <div style="font-size:24px;font-weight:700;color:var(--accent1)" id="n_total_in">0</div>
-        <div style="font-size:10px;color:var(--muted)">kcal</div>
+        <div style="font-size:10px;color:var(--text)">kcal</div>
       </div>
       <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Quemadas cinta</div>
+        <div style="font-size:9px;color:var(--text);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Quemadas cinta</div>
         <div style="font-size:24px;font-weight:700;color:var(--accent2)" id="n_total_out">0</div>
-        <div style="font-size:10px;color:var(--muted)">kcal</div>
+        <div style="font-size:10px;color:var(--text)">kcal</div>
       </div>
     </div>
     <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
-      <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Déficit neto</div>
+      <div style="font-size:9px;color:var(--text);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Déficit neto</div>
       <div style="font-size:28px;font-weight:700" id="n_deficit">—</div>
-      <div style="font-size:10px;color:var(--muted)">kcal · sin metabolismo basal (~2.100 kcal)</div>
+      <div style="font-size:10px;color:var(--text)">kcal · sin metabolismo basal (~2.100 kcal)</div>
     </div>
   </div>
 
@@ -473,7 +500,7 @@
       <span class="moment-time" id="des_total_lbl">0 kcal</span>
     </div>
     <div id="des_items"></div>
-    <div style="font-size:10px;color:var(--muted);margin-top:4px;padding-left:4px">Menú fijo — toca para marcar</div>
+    <div style="font-size:10px;color:var(--text);margin-top:4px;padding-left:4px">Menú fijo — toca para marcar</div>
   </div>
 
   <!-- ALMUERZO -->
@@ -508,12 +535,18 @@
 
   
 
+  <!-- Gráfica balance calórico -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Balance calórico diario</div>
+    <canvas id="balanceChart" style="max-height:200px"></canvas>
+  </div>
+
   <!-- Historial -->
   <div class="table-wrap">
     <div class="table-head"><span id="nutr-count">Historial</span></div>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>Fecha</th><th>🌅</th><th>🥪</th><th>☀️</th><th>🌙</th><th>Total</th></tr></thead>
+        <thead><tr><th>Fecha</th><th>🍽️ Ing.</th><th>🏃 Quem.</th><th>⚖️ Déficit</th></tr></thead>
         <tbody id="nutrBody"></tbody>
       </table>
     </div>
@@ -615,12 +648,12 @@ async function dbSaveSession(s) {
   await sbFetch('Sesiones', {
     method: 'POST',
     upsert: true,
-    body: JSON.stringify({fecha:s.fecha, tipo:s.tipo, km:s.km, tiempo:s.tiempo, calorias:s.calorias, pasos:s.pasos})
+    body: JSON.stringify({fecha:s.fecha, tipo:s.tipo, km:s.km, tiempo:s.tiempo, calorias:s.calorias, pasos:s.pasos, nota:s.nota||null})
   });
 }
 
-async function dbDeleteSession(id) {
-  await sbFetch('Sesiones?id=eq.' + id, { method: 'DELETE', prefer: '' });
+async function dbDeleteSession(fecha, tipo) {
+  await sbFetch('Sesiones?fecha=eq.' + fecha + '&tipo=eq.' + tipo, { method: 'DELETE' });
 }
 
 async function dbGetNutr(fecha) {
@@ -639,6 +672,25 @@ async function dbSaveNutr(fecha, des, alm, com, cen) {
 async function dbGetAllNutr() {
   const data = await sbFetch('nutrici%C3%B3n?order=fecha.desc&select=*');
   return data || [];
+}
+
+// Custom foods
+async function dbGetCustomFoods() {
+  const data = await sbFetch('alimentos_custom?select=*&order=meal.asc,name.asc');
+  return data || [];
+}
+
+async function dbSaveCustomFood(meal, name, qty, kcal) {
+  const result = await sbFetch('alimentos_custom', {
+    method: 'POST',
+    upsert: false,
+    body: JSON.stringify({meal, name, qty, kcal})
+  });
+  return result;
+}
+
+async function dbDeleteCustomFood(id) {
+  await sbFetch('alimentos_custom?id=eq.' + id, { method: 'DELETE' });
 }
 
 async function dbGetAlimentos(fecha) {
@@ -702,6 +754,16 @@ function hideLoading() {
 async function load() {
   showLoading('⏳ Cargando datos...');
   try {
+    // Load custom foods first
+    const customs = await dbGetCustomFoods();
+    customs.forEach(f => {
+      const id = 'custom_' + f.id;
+      if (FOOD_DB[f.meal]) {
+        if (!FOOD_DB[f.meal].find(x => x.id === id)) {
+          FOOD_DB[f.meal].push({id, name:f.name, qty:f.qty, kcal:f.kcal, customId:f.id});
+        }
+      }
+    });
     const data = await dbGetSessions();
     if (data.length === 0) {
       // First time - load initial data
@@ -769,26 +831,27 @@ async function saveSession() {
   const fecha = document.getElementById('f_fecha').value;
   const tiempo = parseInt(document.getElementById('f_tiempo').value);
   const calorias = parseInt(document.getElementById('f_calorias').value);
-  if (!fecha || !tiempo || !calorias) { alert('Fecha, tiempo y calorías son obligatorios'); return; }
+  if (!fecha) { alert('La fecha es obligatoria'); return; }
   const newSession = {
     fecha, tipo: currentTurno,
     km: parseFloat(document.getElementById('f_km').value) || null,
     tiempo, calorias,
-    pasos: parseInt(document.getElementById('f_pasos').value) || 0
+    pasos: parseInt(document.getElementById('f_pasos').value) || 0,
+    nota: document.getElementById('f_nota').value.trim() || null
   };
   showLoading('⏳ Guardando sesión...');
   await dbSaveSession(newSession);
   sessions = await dbGetSessions();
   hideLoading();
-  ['f_fecha','f_km','f_tiempo','f_calorias','f_pasos'].forEach(id => document.getElementById(id).value = '');
+  ['f_fecha','f_km','f_tiempo','f_calorias','f_pasos','f_nota'].forEach(id => document.getElementById(id).value = '');
   toggleForm();
   renderRunning();
 }
 
-async function deleteSession(id) {
+async function deleteSession(fecha, tipo) {
   if (!confirm('¿Eliminar?')) return;
   showLoading('⏳ Eliminando...');
-  await dbDeleteSession(id);
+  await dbDeleteSession(fecha, tipo);
   sessions = await dbGetSessions();
   hideLoading();
   renderRunning();
@@ -813,14 +876,17 @@ function renderRunning() {
   const totKm = sessions.reduce((s,d)=>s+(d.km||0),0);
   const totMin = sessions.reduce((s,d)=>s+d.tiempo,0);
   const totCal = sessions.reduce((s,d)=>s+d.calorias,0);
+  const totPasos = sessions.reduce((s,d)=>s+(d.pasos||0),0);
   document.getElementById('s_km').textContent = totKm.toFixed(1);
   document.getElementById('s_tiempo').textContent = Math.floor(totMin/60)+'h '+(totMin%60)+'m';
   document.getElementById('s_cal').textContent = totCal.toLocaleString('es');
   document.getElementById('s_ses').textContent = sessions.length;
   document.getElementById('s_dias').textContent = daily.length;
   document.getElementById('s_avg').textContent = daily.length ? Math.round(totCal/daily.length) : 0;
+  document.getElementById('s_pasos').textContent = totPasos.toLocaleString('es');
   renderChart(daily);
   renderTable();
+  renderBalanceChart();
 }
 
 function renderChart(daily) {
@@ -863,6 +929,8 @@ function renderTable() {
       <td style="color:var(--accent3)">${s.km?s.km.toFixed(2):'—'}</td>
       <td style="color:var(--accent2)">${s.tiempo}</td>
       <td style="color:var(--accent1);font-weight:700">${s.calorias}</td>
+      <td style="color:var(--green)">${s.pasos?s.pasos.toLocaleString('es'):'—'}</td>
+      <td style="color:var(--muted);font-size:11px">${s.nota||'—'}</td>
       
     </tr>`).join('');
 }
@@ -887,6 +955,7 @@ async function renderSupps() {
   const state = await getSuppState();
   const today = new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('supp-date').textContent = today.charAt(0).toUpperCase()+today.slice(1);
+  renderSuppHistory();
   let checked = 0;
   SUPPS.forEach(id => {
     const card = document.getElementById('sc-'+id);
@@ -1039,22 +1108,28 @@ async function saveNutr() {
 
 async function renderNutrHistory() {
   const entries = await dbGetAllNutr();
+  const daily = getDaily();
+  const dailyMap = {};
+  daily.forEach(d => { dailyMap[d.fecha] = d.calorias; });
   document.getElementById('nutr-count').textContent = 'Historial (' + entries.length + ' días)';
   document.getElementById('nutrBody').innerHTML = entries.map((v) => {
-    const total = (v.desayuno||0) + (v.almuerzo||0) + (v.comida||0) + (v.cena||0);
+    const ingeridas = (v.desayuno||0) + (v.almuerzo||0) + (v.comida||0) + (v.cena||0);
+    const quemadas = dailyMap[v.fecha] || 0;
+    const deficit = ingeridas - quemadas;
     const f = v.fecha.split('-');
+    const defColor = deficit <= 0 ? 'var(--green)' : 'var(--red)';
+    const defText = deficit === 0 ? '0' : (deficit > 0 ? '+' + deficit : deficit);
     return `<tr>
       <td style="color:var(--text)">${f[2]}/${f[1]}</td>
-      <td style="color:var(--accent1)">${v.desayuno||'—'}</td>
-      <td style="color:var(--accent2)">${v.almuerzo||'—'}</td>
-      <td style="color:var(--yellow)">${v.comida||'—'}</td>
-      <td style="color:var(--accent3)">${v.cena||'—'}</td>
-      <td style="color:var(--text);font-weight:700">${total}</td>
+      <td style="color:var(--accent1);font-weight:700">${ingeridas || '—'}</td>
+      <td style="color:var(--accent2);font-weight:700">${quemadas || '—'}</td>
+      <td style="color:${defColor};font-weight:700">${ingeridas ? defText : '—'}</td>
     </tr>`;
   }).join('');
 }
 
 async function renderNutrition() {
+  renderFoodMgmt();
   const todayLabel = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
   document.getElementById('nutr-date').textContent = todayLabel.charAt(0).toUpperCase() + todayLabel.slice(1);
   const today = getTodayKey();
@@ -1084,6 +1159,226 @@ async function renderNutrition() {
     el.style.color = deficit <= 0 ? 'var(--green)' : 'var(--red)';
   }
   renderNutrHistory();
+}
+
+// ── CUSTOM FOODS ─────────────────────────────────────────
+let customFoods = [];
+let balanceChart = null;
+
+async function loadCustomFoods() {
+  customFoods = await dbGetCustomFoods();
+}
+
+function getFormFood() {
+  const meal = document.getElementById('af_meal').value;
+  const name = document.getElementById('af_name').value.trim();
+  const qty = document.getElementById('af_qty').value.trim();
+  const kcal = parseInt(document.getElementById('af_kcal').value);
+  if (!name || !kcal) { alert('Nombre y calorías son obligatorios'); return null; }
+  return { meal, name, qty: qty || '1 porción', kcal };
+}
+
+function clearFoodForm() {
+  document.getElementById('af_name').value = '';
+  document.getElementById('af_qty').value = '';
+  document.getElementById('af_kcal').value = '';
+}
+
+async function addFoodToday() {
+  const f = getFormFood();
+  if (!f) return;
+  // Add to today's nutrStateCache as a temporary item
+  const tempId = 'temp_' + Date.now();
+  // Add to FOOD_DB temporarily
+  FOOD_DB[f.meal].push({id: tempId, name: f.name, qty: f.qty, kcal: f.kcal, temp: true});
+  setNutrState(tempId, true);
+  const today = getTodayKey();
+  await dbToggleAlimento(today, tempId, true);
+  const newState = getNutrState();
+  const des = calcMealTotal('desayuno', newState);
+  const alm = calcMealTotal('almuerzo', newState);
+  const com = calcMealTotal('comida', newState);
+  const cen = calcMealTotal('cena', newState);
+  await dbSaveNutr(today, des, alm, com, cen);
+  clearFoodForm();
+  renderNutrition();
+}
+
+async function addFoodPermanent() {
+  const f = getFormFood();
+  if (!f) return;
+  showLoading('⏳ Guardando alimento...');
+  const saved = await dbSaveCustomFood(f.meal, f.name, f.qty, f.kcal);
+  if (saved && saved.length) {
+    const newFood = {id: 'custom_' + saved[0].id, name: f.name, qty: f.qty, kcal: f.kcal, customId: saved[0].id};
+    FOOD_DB[f.meal].push(newFood);
+  }
+  hideLoading();
+  clearFoodForm();
+  renderNutrition();
+  alert('✓ Guardado en la lista permanentemente');
+}
+
+let balanceChart2 = null;
+
+async function renderBalanceChart() {
+  const today = getTodayKey();
+  const todayNutr = await dbGetNutr(today);
+  const daily = getDaily();
+  const todaySessions = daily.find(d => d.fecha === today);
+  const ingeridas_hoy = todayNutr ? (todayNutr.desayuno||0)+(todayNutr.almuerzo||0)+(todayNutr.comida||0)+(todayNutr.cena||0) : 0;
+  const quemadas_hoy = todaySessions ? todaySessions.calorias : 0;
+  const deficit_hoy = ingeridas_hoy - quemadas_hoy;
+  const todayLabel = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
+
+  // Update balance card
+  ['balanceChart','balanceChart2'].forEach(id => {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    const parent = canvas.parentElement;
+    parent.innerHTML = `
+      <div style="font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">Balance calórico — hoy</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px">${todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1)}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+        <div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:8px;padding:12px">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Ingeridas</div>
+          <div style="font-size:22px;font-weight:700;color:#f97316">${ingeridas_hoy}</div>
+          <div style="font-size:10px;color:var(--muted)">kcal</div>
+        </div>
+        <div style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);border-radius:8px;padding:12px">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Quemadas</div>
+          <div style="font-size:22px;font-weight:700;color:#38bdf8">${quemadas_hoy}</div>
+          <div style="font-size:10px;color:var(--muted)">kcal</div>
+        </div>
+        <div style="background:${deficit_hoy<=0?'rgba(52,211,153,0.1)':'rgba(239,68,68,0.1)'};border:1px solid ${deficit_hoy<=0?'rgba(52,211,153,0.3)':'rgba(239,68,68,0.3)'};border-radius:8px;padding:12px">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Déficit</div>
+          <div style="font-size:22px;font-weight:700;color:${deficit_hoy<=0?'#34d399':'#ef4444'}">${ingeridas_hoy===0?'—':(deficit_hoy>0?'+'+deficit_hoy:deficit_hoy)}</div>
+          <div style="font-size:10px;color:var(--muted)">kcal</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px">+ Metabolismo basal ~2.100 kcal no incluido</div>
+    `;
+  });
+
+  if (false) { // keep vars for linting
+  const nutrData = [], dailyMap = {};
+  const labels = [], ingeridas = [], quemadas = [];
+  
+  const chartConfig = {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {label:'Ingeridas',data:ingeridas,backgroundColor:'rgba(249,115,22,0.7)',borderColor:'#f97316',borderWidth:1,borderRadius:4},
+        {label:'Quemadas cinta',data:quemadas,backgroundColor:'rgba(56,189,248,0.7)',borderColor:'#38bdf8',borderWidth:1,borderRadius:4}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'#64748b',font:{family:'Courier New',size:10}}}},
+      scales:{
+        x:{ticks:{color:'#64748b',font:{size:9}},grid:{color:'#1e293b'}},
+        y:{ticks:{color:'#64748b',font:{size:9}},grid:{color:'#1e293b'}}
+      }
+    }
+  };
+
+  // Render in Comida tab
+  const ctx1 = document.getElementById('balanceChart');
+  if (ctx1) {
+    if (balanceChart) balanceChart.destroy();
+    balanceChart = new Chart(ctx1.getContext('2d'), JSON.parse(JSON.stringify(chartConfig)));
+  }
+
+  } // end if(false)
+}
+
+// ── FOOD MANAGEMENT ──────────────────────────────────────
+let currentFoodMgmtMeal = 'desayuno';
+
+function switchFoodMgmt(el, meal) {
+  document.querySelectorAll('#foodMgmtList').forEach(e => e.innerHTML = '');
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentFoodMgmtMeal = meal;
+  renderFoodMgmt();
+}
+
+function renderFoodMgmt() {
+  const el = document.getElementById('foodMgmtList');
+  if (!el) return;
+  const foods = FOOD_DB[currentFoodMgmtMeal] || [];
+  if (!foods.length) { el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px">No hay alimentos en esta lista</div>'; return; }
+  el.innerHTML = foods.map((f, i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:13px;color:var(--text);font-weight:600">${f.name}</div>
+        <div style="font-size:11px;color:var(--muted)">${f.qty} · ${f.kcal} kcal</div>
+      </div>
+      <button onclick="removeFood('${currentFoodMgmtMeal}',${i},'${f.customId||''}')" 
+        style="background:rgba(239,68,68,0.15);border:1px solid var(--red);color:var(--red);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;font-family:monospace">
+        ✕ Quitar
+      </button>
+    </div>`).join('');
+}
+
+async function removeFood(meal, index, customId) {
+  if (!confirm('¿Eliminar este alimento de la lista?')) return;
+  if (customId) {
+    showLoading('⏳ Eliminando...');
+    await dbDeleteCustomFood(parseInt(customId));
+    hideLoading();
+  }
+  FOOD_DB[meal].splice(index, 1);
+  renderFoodMgmt();
+  renderNutrition();
+}
+
+// ── SUPP HISTORY ─────────────────────────────────────────
+const SUPP_NAMES = {
+  'vinagre-d': 'Vinagre mañana',
+  'multi': 'Multivitamínico',
+  'd3k2': 'D3+K2',
+  'creatina': 'Creatina',
+  'colageno-m': 'Colágeno mañana',
+  'omega3': 'Omega-3',
+  'te': 'Té/Café',
+  'colageno-n': 'Colágeno noche',
+  'jengibre': 'Jengibre'
+};
+
+async function renderSuppHistory() {
+  const el = document.getElementById('suppHistoryBody');
+  if (!el) return;
+  // Get last 14 days of supp data
+  const data = await sbFetch('suplementos?order=fecha.desc&select=*&limit=200');
+  if (!data || !data.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px">Sin historial aún</div>';
+    return;
+  }
+  // Group by date
+  const byDate = {};
+  data.forEach(r => {
+    if (!byDate[r.fecha]) byDate[r.fecha] = {};
+    byDate[r.fecha][r.suplemento] = r.tomado;
+  });
+  const dates = Object.keys(byDate).sort((a,b) => b.localeCompare(a)).slice(0,14);
+  el.innerHTML = dates.map(fecha => {
+    const state = byDate[fecha];
+    const tomados = SUPPS.filter(id => state[id]);
+    const faltaron = SUPPS.filter(id => !state[id]);
+    const f = fecha.split('-');
+    const pct = Math.round((tomados.length / SUPPS.length) * 100);
+    const color = pct === 100 ? 'var(--green)' : pct >= 70 ? 'var(--yellow)' : 'var(--red)';
+    return `
+      <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-size:14px;font-weight:700;color:#ffffff">${f[2]}/${f[1]}/${f[0]}</div>
+          <div style="font-size:13px;font-weight:700;color:${color}">${tomados.length}/${SUPPS.length} · ${pct}%</div>
+        </div>
+        ${faltaron.length ? `<div style="font-size:11px;color:var(--red)">❌ Faltaron: ${faltaron.map(id=>SUPP_NAMES[id]||id).join(', ')}</div>` : '<div style="font-size:11px;color:var(--green)">✅ Todos los suplementos tomados</div>'}
+      </div>`;
+  }).join('');
 }
 
 load();
