@@ -188,6 +188,18 @@
     </div>
   </div>
 
+  <!-- Objetivo cinta hoy -->
+  <div class="card" style="margin-bottom:14px" id="cinta-objetivo-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-size:13px;font-weight:700;color:#ffffff">🏃 Objetivo cinta hoy</div>
+      <div style="font-size:13px;font-weight:700" id="cinta-obj-label">0 / 750 kcal</div>
+    </div>
+    <div class="progress-bar-wrap" style="height:10px">
+      <div class="progress-bar" id="cinta-obj-bar" style="width:0%;height:10px"></div>
+    </div>
+    <div style="font-size:11px;color:#94a3b8;margin-top:6px;text-align:center" id="cinta-obj-sub">Quema 750 kcal diarias para alcanzar tu objetivo</div>
+  </div>
+
   <div class="tabs">
     <button class="tab active" onclick="switchTab(this,'calorias')">🔥 Cal</button>
     <button class="tab" onclick="switchTab(this,'tiempo')">⏱ Tiempo</button>
@@ -612,6 +624,26 @@
     </div>
   </div>
 
+  <!-- Mi Plan -->
+  <div class="card" style="margin-bottom:14px;border:1px solid var(--accent1)">
+    <div class="card-title">🎯 Mi plan — 3 meses</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div style="background:var(--bg);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:10px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Inicio</div>
+        <div style="font-size:16px;font-weight:700;color:#ffffff">5 Jun 2026</div>
+        <div style="font-size:12px;color:var(--accent1);font-weight:700">99 kg</div>
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:10px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Objetivo</div>
+        <div style="font-size:16px;font-weight:700;color:#ffffff">5 Sep 2026</div>
+        <div style="font-size:12px;color:var(--green);font-weight:700">85 kg</div>
+      </div>
+    </div>
+    <div class="card-title" style="margin-bottom:8px">Hitos mensuales</div>
+    <div id="hitosContainer"></div>
+    <div style="font-size:11px;color:#94a3b8;margin-top:10px;text-align:center">Déficit diario necesario: 1.155 kcal · Cinta objetivo: 750 kcal/día</div>
+  </div>
+
   <!-- Progreso hacia objetivo -->
   <div class="card" style="margin-bottom:14px">
     <div class="card-title">Progreso hacia 85 kg</div>
@@ -1002,6 +1034,7 @@ function renderRunning() {
   renderChart(daily);
   renderTable();
   renderBalanceChart();
+  renderCintaObjetivo();
 }
 
 function renderChart(daily) {
@@ -1363,17 +1396,18 @@ async function renderBalanceChart() {
           <div style="font-size:10px;color:var(--muted)">kcal</div>
         </div>
         <div style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);border-radius:8px;padding:12px">
-          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Gasto total</div>
-          <div style="font-size:22px;font-weight:700;color:#38bdf8">${gasto_total}</div>
-          <div style="font-size:10px;color:var(--muted)">cinta + basal</div>
+          <div style="font-size:9px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Cinta</div>
+          <div style="font-size:22px;font-weight:700;color:#38bdf8">${quemadas_cinta}</div>
+          <div style="font-size:10px;color:#94a3b8">kcal quemadas</div>
         </div>
-        <div style="background:${deficit_hoy<=0?'rgba(52,211,153,0.1)':'rgba(239,68,68,0.1)'};border:1px solid ${deficit_hoy<=0?'rgba(52,211,153,0.3)':'rgba(239,68,68,0.3)'};border-radius:8px;padding:12px">
-          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Déficit real</div>
-          <div style="font-size:22px;font-weight:700;color:${deficit_hoy<=0?'#34d399':'#ef4444'}">${ingeridas_hoy===0?'—':(deficit_hoy>0?'+'+deficit_hoy:deficit_hoy)}</div>
-          <div style="font-size:10px;color:var(--muted)">kcal</div>
+        <div style="background:${deficit_hoy<=-1155?'rgba(52,211,153,0.1)':deficit_hoy<=0?'rgba(251,191,36,0.1)':'rgba(239,68,68,0.1)'};border:1px solid ${deficit_hoy<=-1155?'rgba(52,211,153,0.3)':deficit_hoy<=0?'rgba(251,191,36,0.3)':'rgba(239,68,68,0.3)'};border-radius:8px;padding:12px">
+          <div style="font-size:9px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Déficit real</div>
+          <div style="font-size:22px;font-weight:700;color:${deficit_hoy<=-1155?'#34d399':deficit_hoy<=0?'#fbbf24':'#ef4444'}">${ingeridas_hoy===0?'—':(deficit_hoy>0?'+'+deficit_hoy:deficit_hoy)}</div>
+          <div style="font-size:10px;color:#94a3b8">${deficit_hoy<=-1155?'✅ Objetivo':'⚠️ Obj: -1.155'}</div>
         </div>
       </div>
-      <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:8px">Cinta: ${quemadas_cinta} kcal · Basal: 1.976 kcal · Total gasto: ${gasto_total} kcal</div>
+      <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:8px">🔥 Basal: 1.976 · 🏃 Cinta: ${quemadas_cinta} · 📊 Gasto total: ${gasto_total} kcal</div>
+      <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:4px">🍽️ Máximo recomendado: 1.571 kcal/día</div>
     `;
   });
 
@@ -1562,6 +1596,9 @@ async function renderPeso() {
     <div style="font-size:11px;color:#94a3b8;margin-top:8px">* Basado en ritmo real desde 27/04/2026. Incluye períodos de reposo postoperatorio.</div>
   `;
 
+  // Hitos
+  renderHitos(data);
+
   // Chart
   const labels = data.map(d => { const f=d.fecha.split('-'); return f[2]+'/'+f[1]; });
   const pesos = data.map(d => parseFloat(d.kg));
@@ -1600,6 +1637,55 @@ async function renderPeso() {
       <td style="color:${cambioColor};font-weight:700">${cambio !== '—' ? (parseFloat(cambio)>0?'+':'')+cambio : '—'}</td>
     </tr>`;
   }).join('');
+}
+
+// ── PLAN & HITOS ─────────────────────────────────────────
+const HITOS = [
+  {fecha:'2026-07-05', peso:94.3, label:'1 mes'},
+  {fecha:'2026-08-05', peso:89.6, label:'2 meses'},
+  {fecha:'2026-09-05', peso:85.0, label:'🎯 Objetivo'},
+];
+const OBJETIVO_DEFICIT = 1155;
+const OBJETIVO_CINTA = 750;
+
+function renderHitos(pesoData) {
+  const el = document.getElementById('hitosContainer');
+  if (!el) return;
+  const ultimoPeso = pesoData.length ? parseFloat(pesoData[pesoData.length-1].kg) : 99;
+  el.innerHTML = HITOS.map(h => {
+    const alcanzado = ultimoPeso <= h.peso;
+    const diff = (ultimoPeso - h.peso).toFixed(1);
+    const color = alcanzado ? 'var(--green)' : parseFloat(diff) <= 2 ? 'var(--yellow)' : '#94a3b8';
+    const icon = alcanzado ? '✅' : '⏳';
+    const f = h.fecha.split('-');
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <span style="font-size:13px;font-weight:700;color:#ffffff">${h.label}</span>
+        <span style="font-size:11px;color:#94a3b8;margin-left:8px">${f[2]}/${f[1]}/${f[0]}</span>
+      </div>
+      <div style="text-align:right">
+        <span style="font-size:14px;font-weight:700;color:${color}">${icon} ${h.peso} kg</span>
+        ${!alcanzado ? `<div style="font-size:10px;color:#94a3b8">Faltan ${diff} kg</div>` : '<div style="font-size:10px;color:var(--green)">¡Conseguido!</div>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCintaObjetivo() {
+  const today = getTodayKey();
+  const todaySessions = sessions.filter(s => s.fecha === today);
+  const calHoy = todaySessions.reduce((sum, s) => sum + (s.calorias||0), 0);
+  const pct = Math.min(Math.round((calHoy / OBJETIVO_CINTA) * 100), 100);
+  const bar = document.getElementById('cinta-obj-bar');
+  const label = document.getElementById('cinta-obj-label');
+  const sub = document.getElementById('cinta-obj-sub');
+  if (!bar) return;
+  bar.style.width = pct + '%';
+  bar.style.background = pct >= 100 ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : 'var(--accent1)';
+  label.style.color = pct >= 100 ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : 'var(--accent1)';
+  label.textContent = calHoy + ' / ' + OBJETIVO_CINTA + ' kcal';
+  if (pct >= 100) sub.textContent = '✅ Objetivo diario alcanzado';
+  else sub.textContent = 'Faltan ' + (OBJETIVO_CINTA - calHoy) + ' kcal para el objetivo';
 }
 
 load();
