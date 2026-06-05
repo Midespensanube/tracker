@@ -549,6 +549,18 @@
     <canvas id="balanceChart" style="max-height:200px"></canvas>
   </div>
 
+  <!-- Gestionar alimentos -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">🗑️ Gestionar lista de alimentos</div>
+    <div class="tabs" style="margin-bottom:10px">
+      <button class="tab active" onclick="switchFoodMgmt(this,'desayuno')">🌅</button>
+      <button class="tab" onclick="switchFoodMgmt(this,'almuerzo')">🥪</button>
+      <button class="tab" onclick="switchFoodMgmt(this,'comida')">☀️</button>
+      <button class="tab" onclick="switchFoodMgmt(this,'cena')">🌙</button>
+    </div>
+    <div id="foodMgmtList"></div>
+  </div>
+
   <!-- Historial -->
   <div class="table-wrap">
     <div class="table-head"><span id="nutr-count">Historial</span></div>
@@ -1131,6 +1143,7 @@ async function renderNutrHistory() {
 }
 
 async function renderNutrition() {
+  renderFoodMgmt();
   const todayLabel = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
   document.getElementById('nutr-date').textContent = todayLabel.charAt(0).toUpperCase() + todayLabel.slice(1);
   const today = getTodayKey();
@@ -1264,6 +1277,47 @@ async function renderBalanceChart() {
     if (balanceChart2) balanceChart2.destroy();
     balanceChart2 = new Chart(ctx2.getContext('2d'), JSON.parse(JSON.stringify(chartConfig)));
   }
+}
+
+// ── FOOD MANAGEMENT ──────────────────────────────────────
+let currentFoodMgmtMeal = 'desayuno';
+
+function switchFoodMgmt(el, meal) {
+  document.querySelectorAll('#foodMgmtList').forEach(e => e.innerHTML = '');
+  el.closest('.tabs').querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentFoodMgmtMeal = meal;
+  renderFoodMgmt();
+}
+
+function renderFoodMgmt() {
+  const el = document.getElementById('foodMgmtList');
+  if (!el) return;
+  const foods = FOOD_DB[currentFoodMgmtMeal] || [];
+  if (!foods.length) { el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px">No hay alimentos en esta lista</div>'; return; }
+  el.innerHTML = foods.map((f, i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border)">
+      <div>
+        <div style="font-size:13px;color:var(--text);font-weight:600">${f.name}</div>
+        <div style="font-size:11px;color:var(--muted)">${f.qty} · ${f.kcal} kcal</div>
+      </div>
+      <button onclick="removeFood('${currentFoodMgmtMeal}',${i},'${f.customId||''}')" 
+        style="background:rgba(239,68,68,0.15);border:1px solid var(--red);color:var(--red);border-radius:6px;padding:5px 10px;cursor:pointer;font-size:12px;font-family:monospace">
+        ✕ Quitar
+      </button>
+    </div>`).join('');
+}
+
+async function removeFood(meal, index, customId) {
+  if (!confirm('¿Eliminar este alimento de la lista?')) return;
+  if (customId) {
+    showLoading('⏳ Eliminando...');
+    await dbDeleteCustomFood(parseInt(customId));
+    hideLoading();
+  }
+  FOOD_DB[meal].splice(index, 1);
+  renderFoodMgmt();
+  renderNutrition();
 }
 
 load();
