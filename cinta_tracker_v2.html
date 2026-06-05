@@ -21,8 +21,8 @@
     --green: #34d399;
     --pink: #f472b6;
     --yellow: #fbbf24;
-    --text: #f1f5f9;
-    --muted: #64748b;
+    --text: #ffffff;
+    --muted: #94a3b8;
     --red: #ef4444;
   }
   body { background: var(--bg); color: var(--text); font-family: 'Courier New', monospace; min-height: 100vh; padding-bottom: 80px; }
@@ -1236,14 +1236,47 @@ async function addFoodPermanent() {
 let balanceChart2 = null;
 
 async function renderBalanceChart() {
-  const nutrData = await dbGetAllNutr();
-  if (!nutrData.length) return;
+  const today = getTodayKey();
+  const todayNutr = await dbGetNutr(today);
   const daily = getDaily();
-  const dailyMap = {};
-  daily.forEach(d => { dailyMap[d.fecha] = d.calorias; });
-  const labels = nutrData.slice(0,14).reverse().map(d => { const f=d.fecha.split('-'); return f[2]+'/'+f[1]; });
-  const ingeridas = nutrData.slice(0,14).reverse().map(d => (d.desayuno||0)+(d.almuerzo||0)+(d.comida||0)+(d.cena||0));
-  const quemadas = nutrData.slice(0,14).reverse().map(d => dailyMap[d.fecha] || 0);
+  const todaySessions = daily.find(d => d.fecha === today);
+  const ingeridas_hoy = todayNutr ? (todayNutr.desayuno||0)+(todayNutr.almuerzo||0)+(todayNutr.comida||0)+(todayNutr.cena||0) : 0;
+  const quemadas_hoy = todaySessions ? todaySessions.calorias : 0;
+  const deficit_hoy = ingeridas_hoy - quemadas_hoy;
+  const todayLabel = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
+
+  // Update balance card
+  ['balanceChart','balanceChart2'].forEach(id => {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    const parent = canvas.parentElement;
+    parent.innerHTML = `
+      <div style="font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px">Balance calórico — hoy</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px">${todayLabel.charAt(0).toUpperCase()+todayLabel.slice(1)}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
+        <div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:8px;padding:12px">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Ingeridas</div>
+          <div style="font-size:22px;font-weight:700;color:#f97316">${ingeridas_hoy}</div>
+          <div style="font-size:10px;color:var(--muted)">kcal</div>
+        </div>
+        <div style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);border-radius:8px;padding:12px">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Quemadas</div>
+          <div style="font-size:22px;font-weight:700;color:#38bdf8">${quemadas_hoy}</div>
+          <div style="font-size:10px;color:var(--muted)">kcal</div>
+        </div>
+        <div style="background:${deficit_hoy<=0?'rgba(52,211,153,0.1)':'rgba(239,68,68,0.1)'};border:1px solid ${deficit_hoy<=0?'rgba(52,211,153,0.3)':'rgba(239,68,68,0.3)'};border-radius:8px;padding:12px">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Déficit</div>
+          <div style="font-size:22px;font-weight:700;color:${deficit_hoy<=0?'#34d399':'#ef4444'}">${ingeridas_hoy===0?'—':(deficit_hoy>0?'+'+deficit_hoy:deficit_hoy)}</div>
+          <div style="font-size:10px;color:var(--muted)">kcal</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px">+ Metabolismo basal ~2.100 kcal no incluido</div>
+    `;
+  });
+
+  if (false) { // keep vars for linting
+  const nutrData = [], dailyMap = {};
+  const labels = [], ingeridas = [], quemadas = [];
   
   const chartConfig = {
     type: 'bar',
@@ -1271,12 +1304,7 @@ async function renderBalanceChart() {
     balanceChart = new Chart(ctx1.getContext('2d'), JSON.parse(JSON.stringify(chartConfig)));
   }
 
-  // Render in Cinta tab
-  const ctx2 = document.getElementById('balanceChart2');
-  if (ctx2) {
-    if (balanceChart2) balanceChart2.destroy();
-    balanceChart2 = new Chart(ctx2.getContext('2d'), JSON.parse(JSON.stringify(chartConfig)));
-  }
+  } // end if(false)
 }
 
 // ── FOOD MANAGEMENT ──────────────────────────────────────
