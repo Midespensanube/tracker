@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Armando Tracker">
+<meta name="apple-mobile-web-app-title" content="AS_4289">
 <meta name="theme-color" content="#0a0f1e">
-<title>Armando Saavedra — Informe Médico</title>
+<title>AS_4289 · Tracker Médico</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -126,8 +126,8 @@
 </style>
 </head>
 <body>
-<div style="background:#1e293b;color:#94a3b8;text-align:center;padding:10px;font-size:12px;font-family:monospace;letter-spacing:1px;font-weight:700">
-  👁 MODO SOLO LECTURA · Informe médico · Armando Saavedra Cabrera
+<div style="background:#1e293b;color:#94a3b8;text-align:center;padding:10px;font-size:12px;font-family:monospace;letter-spacing:2px;font-weight:700">
+  👁 SOLO LECTURA · AS_4289
 </div>
 
 <!-- PAGE: RUNNING -->
@@ -137,25 +137,10 @@
     <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
         <div class="page-title">ACTIVIDAD FÍSICA</div>
-        <div class="page-sub">Armando Saavedra Cabrera · DNI 42891097F · 52 años</div>
+        <div class="page-sub">Código: AS_4289</div>
       </div>
-      <span style="color:var(--muted);font-size:11px">Solo lectura</span>
+      
     </div>
-  </div>
-
-      <div class="form-grid">
-      <div class="fg"><label>Fecha *</label><input type="date" id="f_fecha"></div>
-      <div class="fg"><label>Kilómetros</label><input type="number" step="0.01" placeholder="5.50" id="f_km"></div>
-      <div class="fg"><label>Tiempo (min) *</label><input type="number" placeholder="60" id="f_tiempo"></div>
-      <div class="fg"><label>Calorías *</label><input type="number" placeholder="350" id="f_calorias"></div>
-      <div class="fg" style="grid-column:span 2"><label>Pasos</label><input type="number" placeholder="8000" id="f_pasos"></div>
-      <div class="fg" style="grid-column:span 2"><label>Nota (opcional)</label><input type="text" placeholder="Ej: Descanso, Op. mano derecha..." id="f_nota"></div>
-    </div>
-    <div class="turno-row">
-      <button class="turno-btn am" id="btn_m" onclick="setTurno('M')">🌅 Mañana</button>
-      <button class="turno-btn" id="btn_t" onclick="setTurno('T')">🌆 Tarde</button>
-    </div>
-    <button class="btn-save" onclick="saveSession()">✓ Guardar sesión</button>
   </div>
 
   <div class="stats">
@@ -242,7 +227,7 @@
       <span class="moment-name">Desayuno</span>
       <span class="moment-time">07:30</span>
     </div>
-    <div class="supp-card" id="sc-vinagre-d" onclick="return false;" data-orig="toggleSupp('vinagre-d')">
+    <div class="supp-card" id="sc-vinagre-d" onclick="return false;"'vinagre-d')">
       <div class="supp-check" id="chk-vinagre-d"></div>
       <div class="supp-info">
         <div class="supp-name">Vinagre de manzana</div>
@@ -250,7 +235,7 @@
         <div class="supp-why">Frena el pico de glucosa de la miel. Tu glucosa bajó de 101 a 94,6 en parte por esto. Tomar con pajita para proteger el esmalte dental.</div>
       </div>
     </div>
-    <div class="supp-card" id="sc-multi" onclick="return false;" data-orig="toggleSupp('multi')">
+    <div class="supp-card" id="sc-multi" onclick="return false;"'multi')">
       <div class="supp-check" id="chk-multi"></div>
       <div class="supp-info">
         <div class="supp-name">Multivitamínico</div>
@@ -259,7 +244,7 @@
         <div class="supp-alert">⚠️ Confirmado: no contiene hierro ✅</div>
       </div>
     </div>
-    <div class="supp-card" id="sc-d3k2" onclick="return false;" data-orig="toggleSupp('d3k2')">
+    <div class="supp-card" id="sc-d3k2" onclick="return false;"'d3k2')">
       <div class="supp-check" id="chk-d3k2"></div>
       <div class="supp-info">
         <div class="supp-name">D3 + K2</div>
@@ -267,7 +252,7 @@
         <div class="supp-why">Vitamina D liposoluble — necesita grasa para absorberse. Las almendras son perfectas. Tu nivel actual es 31,9 ng/mL, necesitas llegar a 50+. El K2 dirige el calcio a los huesos y no a las arterias. Crítico para las protrusiones C6-C7.</div>
       </div>
     </div>
-    <div class="supp-card" id="sc-creatina" onclick="return false;" data-orig="toggleSupp('creatina')">
+    <div class="supp-card" id="sc-creatina" onclick="return false;"'creatina')">
       <div class="supp-check" id="chk-creatina"></div>
       <div class="supp-info">
         <div class="supp-name">Creatina</div>
@@ -275,7 +260,7 @@
         <div class="supp-why">Sin sabor, se disuelve perfectamente. Energía celular y recuperación muscular. Con sesiones dobles es especialmente importante. Idealmente también tomar una dosis post-entreno.</div>
       </div>
     </div>
-    <div class="supp-card" id="sc-colageno-m" onclick="return false;" data-orig="toggleSupp('colageno-m')">
+    <div class="supp-card" id="sc-colageno-m" onclick="return false;"'colageno-m')">
       <div class="supp-check" id="chk-colageno-m"></div>
       <div class="supp-info">
         <div class="supp-name">Colágeno + Magnesio</div>
@@ -292,7 +277,7 @@
       <span class="moment-name">Comida</span>
       <span class="moment-time">13:30</span>
     </div>
-    <div class="supp-card" id="sc-omega3" onclick="return false;" data-orig="toggleSupp('omega3')">
+    <div class="supp-card" id="sc-omega3" onclick="return false;"'omega3')">
       <div class="supp-check" id="chk-omega3"></div>
       <div class="supp-info">
         <div class="supp-name">Omega-3</div>
@@ -300,7 +285,7 @@
         <div class="supp-why">Tomar con el AOVE de la ensalada — la grasa reduce la oxidación del omega-3 y mejora su absorción. Tu VSG de 1mm confirma que está funcionando. Antiinflamatorio directo sobre la radiculopatía C7.</div>
       </div>
     </div>
-    <div class="supp-card" id="sc-te" onclick="return false;" data-orig="toggleSupp('te')">
+    <div class="supp-card" id="sc-te" onclick="return false;"'te')">
       <div class="supp-check" id="chk-te"></div>
       <div class="supp-info">
         <div class="supp-name">Té verde o café</div>
@@ -318,7 +303,7 @@
       <span class="moment-name">Cena</span>
       <span class="moment-time">19:30</span>
     </div>
-    <div class="supp-card" id="sc-colageno-n" onclick="return false;" data-orig="toggleSupp('colageno-n')">
+    <div class="supp-card" id="sc-colageno-n" onclick="return false;"'colageno-n')">
       <div class="supp-check" id="chk-colageno-n"></div>
       <div class="supp-info">
         <div class="supp-name">Colágeno + Magnesio</div>
@@ -326,7 +311,7 @@
         <div class="supp-why">La proteína de los huevos potencia la absorción del colágeno. El magnesio nocturno favorece el sueño profundo y la recuperación muscular mientras duermes. Con 8h de sueño tienes la ventana perfecta de reparación.</div>
       </div>
     </div>
-    <div class="supp-card" id="sc-jengibre" onclick="return false;" data-orig="toggleSupp('jengibre')">
+    <div class="supp-card" id="sc-jengibre" onclick="return false;"'jengibre')">
       <div class="supp-check" id="chk-jengibre"></div>
       <div class="supp-info">
         <div class="supp-name">Infusión de jengibre</div>
@@ -1155,7 +1140,7 @@ function calcMealTotal(meal, state) {
 function renderFoodList(containerId, meal, state, fixed) {
   const el = document.getElementById(containerId);
   el.innerHTML = FOOD_DB[meal].map(f => `
-    <div class="supp-card ${state[f.id] ? 'checked' : ''}" onclick="return false;" data-orig="toggleFood('${f.id}')">
+    <div class="supp-card ${state[f.id] ? 'checked' : ''}" onclick="return false;"'${f.id}')">
       <div class="supp-check" id="fchk-${f.id}">${state[f.id] ? '✓' : ''}</div>
       <div class="supp-info">
         <div class="supp-name">${f.name}</div>
