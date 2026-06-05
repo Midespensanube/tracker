@@ -1341,9 +1341,11 @@ async function renderBalanceChart() {
   const todayNutr = await dbGetNutr(today);
   const daily = getDaily();
   const todaySessions = daily.find(d => d.fecha === today);
+  const METABOLISMO_BASAL = 1976;
   const ingeridas_hoy = todayNutr ? (todayNutr.desayuno||0)+(todayNutr.almuerzo||0)+(todayNutr.comida||0)+(todayNutr.cena||0) : 0;
-  const quemadas_hoy = todaySessions ? todaySessions.calorias : 0;
-  const deficit_hoy = ingeridas_hoy - quemadas_hoy;
+  const quemadas_cinta = todaySessions ? todaySessions.calorias : 0;
+  const gasto_total = quemadas_cinta + METABOLISMO_BASAL;
+  const deficit_hoy = ingeridas_hoy - gasto_total;
   const todayLabel = new Date().toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'long'});
 
   // Update balance card
@@ -1361,17 +1363,17 @@ async function renderBalanceChart() {
           <div style="font-size:10px;color:var(--muted)">kcal</div>
         </div>
         <div style="background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);border-radius:8px;padding:12px">
-          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Quemadas</div>
-          <div style="font-size:22px;font-weight:700;color:#38bdf8">${quemadas_hoy}</div>
-          <div style="font-size:10px;color:var(--muted)">kcal</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Gasto total</div>
+          <div style="font-size:22px;font-weight:700;color:#38bdf8">${gasto_total}</div>
+          <div style="font-size:10px;color:var(--muted)">cinta + basal</div>
         </div>
         <div style="background:${deficit_hoy<=0?'rgba(52,211,153,0.1)':'rgba(239,68,68,0.1)'};border:1px solid ${deficit_hoy<=0?'rgba(52,211,153,0.3)':'rgba(239,68,68,0.3)'};border-radius:8px;padding:12px">
-          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Déficit</div>
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Déficit real</div>
           <div style="font-size:22px;font-weight:700;color:${deficit_hoy<=0?'#34d399':'#ef4444'}">${ingeridas_hoy===0?'—':(deficit_hoy>0?'+'+deficit_hoy:deficit_hoy)}</div>
           <div style="font-size:10px;color:var(--muted)">kcal</div>
         </div>
       </div>
-      <div style="font-size:10px;color:var(--muted);text-align:center;margin-top:8px">+ Metabolismo basal ~2.100 kcal no incluido</div>
+      <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:8px">Cinta: ${quemadas_cinta} kcal · Basal: 1.976 kcal · Total gasto: ${gasto_total} kcal</div>
     `;
   });
 
