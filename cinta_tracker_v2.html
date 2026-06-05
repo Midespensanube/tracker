@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Armando Tracker">
@@ -29,7 +29,7 @@
 
   /* NAV */
   .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #0d1424; border-top: 1px solid var(--border); display: flex; z-index: 100; }
-  .nav-btn { flex: 1; padding: 12px 4px 10px; background: none; border: none; color: var(--muted); cursor: pointer; font-family: monospace; font-size: 10px; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color 0.2s; }
+  .nav-btn { flex: 1; padding: 12px 4px 10px; background: none; border: none; color: #94a3b8; cursor: pointer; font-family: monospace; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color 0.2s; font-weight: 600; }
   .nav-btn.active { color: var(--accent1); }
   .nav-btn span { font-size: 18px; }
 
@@ -39,23 +39,23 @@
 
   /* HEADER */
   .page-header { margin-bottom: 20px; }
-  .page-label { color: var(--accent1); font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 2px; }
+  .page-label { color: var(--accent1); font-size: 12px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 2px; font-weight: 700; }
   .page-title { font-size: 22px; font-weight: 900; }
-  .page-sub { color: var(--muted); font-size: 11px; margin-top: 2px; }
+  .page-sub { color: #cbd5e1; font-size: 13px; margin-top: 2px; }
 
   /* CARDS */
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
-  .card-title { font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; }
+  .card-title { font-size: 12px; letter-spacing: 2px; color: #ffffff; text-transform: uppercase; margin-bottom: 12px; font-weight: 700; }
 
   /* STATS */
   .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
   .stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 11px; }
-  .stat-label { color: var(--muted); font-size: 9px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
-  .stat-value { font-size: 17px; font-weight: 700; }
+  .stat-label { color: #ffffff; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; font-weight: 600; }
+  .stat-value { font-size: 20px; font-weight: 700; }
 
   /* TABS */
   .tabs { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 2px; }
-  .tab { padding: 7px 13px; border-radius: 6px; cursor: pointer; font-family: monospace; font-size: 12px; border: 1px solid var(--border); background: transparent; color: var(--muted); white-space: nowrap; }
+  .tab { padding: 8px 14px; border-radius: 6px; cursor: pointer; font-family: monospace; font-size: 13px; border: 1px solid var(--border); background: transparent; color: #94a3b8; white-space: nowrap; font-weight: 600; }
   .tab.active { background: var(--card); color: var(--text); font-weight: 700; border-color: var(--accent1); }
 
   /* CHART */
@@ -181,6 +181,10 @@
       <div class="stat-label">Cal/día</div>
       <div class="stat-value" style="color:var(--yellow)" id="s_avg">—</div>
     </div>
+    <div class="stat" style="border-left:3px solid #34d399;grid-column:span 3">
+      <div class="stat-label">Pasos totales</div>
+      <div class="stat-value" style="color:#34d399" id="s_pasos">—</div>
+    </div>
   </div>
 
   <div class="tabs">
@@ -205,7 +209,7 @@
     </div>
     <div class="table-scroll">
       <table>
-        <thead><tr><th>Fecha</th><th>T</th><th>KM</th><th>Min</th><th>Cal</th><th></th></tr></thead>
+        <thead><tr><th>Fecha</th><th>T</th><th>KM</th><th>Min</th><th>Cal</th><th>Pasos</th><th></th></tr></thead>
         <tbody id="tableBody"></tbody>
       </table>
     </div>
@@ -331,6 +335,15 @@
   </div>
 
   <button class="reset-btn" onclick="resetSupps()">↺ Reiniciar checklist de hoy</button>
+
+  <!-- Historial suplementos -->
+  <div class="table-wrap" style="margin-top:16px">
+    <div class="table-head"><span>Historial de suplementos</span></div>
+    <div class="table-scroll" id="suppHistoryBody" style="max-height:300px;overflow-y:auto;padding:8px 14px">
+      <div style="color:var(--muted);font-size:12px;padding:8px">Cargando...</div>
+    </div>
+  </div>
+
   <div class="footer" style="margin-top:12px">Toca cada suplemento para marcarlo como tomado</div>
 </div>
 
@@ -895,12 +908,14 @@ function renderRunning() {
   const totKm = sessions.reduce((s,d)=>s+(d.km||0),0);
   const totMin = sessions.reduce((s,d)=>s+d.tiempo,0);
   const totCal = sessions.reduce((s,d)=>s+d.calorias,0);
+  const totPasos = sessions.reduce((s,d)=>s+(d.pasos||0),0);
   document.getElementById('s_km').textContent = totKm.toFixed(1);
   document.getElementById('s_tiempo').textContent = Math.floor(totMin/60)+'h '+(totMin%60)+'m';
   document.getElementById('s_cal').textContent = totCal.toLocaleString('es');
   document.getElementById('s_ses').textContent = sessions.length;
   document.getElementById('s_dias').textContent = daily.length;
   document.getElementById('s_avg').textContent = daily.length ? Math.round(totCal/daily.length) : 0;
+  document.getElementById('s_pasos').textContent = totPasos.toLocaleString('es');
   renderChart(daily);
   renderTable();
   renderBalanceChart();
@@ -946,6 +961,7 @@ function renderTable() {
       <td style="color:var(--accent3)">${s.km?s.km.toFixed(2):'—'}</td>
       <td style="color:var(--accent2)">${s.tiempo}</td>
       <td style="color:var(--accent1);font-weight:700">${s.calorias}</td>
+      <td style="color:var(--green)">${s.pasos?s.pasos.toLocaleString('es'):'—'}</td>
       <td><button class="btn-del" data-fecha="${s.fecha}" data-tipo="${s.tipo}" onclick="deleteSession(this.dataset.fecha, this.dataset.tipo)">✕</button></td>
     </tr>`).join('');
 }
@@ -970,6 +986,7 @@ async function renderSupps() {
   const state = await getSuppState();
   const today = new Date().toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('supp-date').textContent = today.charAt(0).toUpperCase()+today.slice(1);
+  renderSuppHistory();
   let checked = 0;
   SUPPS.forEach(id => {
     const card = document.getElementById('sc-'+id);
@@ -1346,6 +1363,53 @@ async function removeFood(meal, index, customId) {
   FOOD_DB[meal].splice(index, 1);
   renderFoodMgmt();
   renderNutrition();
+}
+
+// ── SUPP HISTORY ─────────────────────────────────────────
+const SUPP_NAMES = {
+  'vinagre-d': 'Vinagre mañana',
+  'multi': 'Multivitamínico',
+  'd3k2': 'D3+K2',
+  'creatina': 'Creatina',
+  'colageno-m': 'Colágeno mañana',
+  'omega3': 'Omega-3',
+  'te': 'Té/Café',
+  'colageno-n': 'Colágeno noche',
+  'jengibre': 'Jengibre'
+};
+
+async function renderSuppHistory() {
+  const el = document.getElementById('suppHistoryBody');
+  if (!el) return;
+  // Get last 14 days of supp data
+  const data = await sbFetch('suplementos?order=fecha.desc&select=*&limit=200');
+  if (!data || !data.length) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:12px;padding:8px">Sin historial aún</div>';
+    return;
+  }
+  // Group by date
+  const byDate = {};
+  data.forEach(r => {
+    if (!byDate[r.fecha]) byDate[r.fecha] = {};
+    byDate[r.fecha][r.suplemento] = r.tomado;
+  });
+  const dates = Object.keys(byDate).sort((a,b) => b.localeCompare(a)).slice(0,14);
+  el.innerHTML = dates.map(fecha => {
+    const state = byDate[fecha];
+    const tomados = SUPPS.filter(id => state[id]);
+    const faltaron = SUPPS.filter(id => !state[id]);
+    const f = fecha.split('-');
+    const pct = Math.round((tomados.length / SUPPS.length) * 100);
+    const color = pct === 100 ? 'var(--green)' : pct >= 70 ? 'var(--yellow)' : 'var(--red)';
+    return `
+      <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-size:14px;font-weight:700;color:#ffffff">${f[2]}/${f[1]}/${f[0]}</div>
+          <div style="font-size:13px;font-weight:700;color:${color}">${tomados.length}/${SUPPS.length} · ${pct}%</div>
+        </div>
+        ${faltaron.length ? `<div style="font-size:11px;color:var(--red)">❌ Faltaron: ${faltaron.map(id=>SUPP_NAMES[id]||id).join(', ')}</div>` : '<div style="font-size:11px;color:var(--green)">✅ Todos los suplementos tomados</div>'}
+      </div>`;
+  }).join('');
 }
 
 load();
