@@ -192,6 +192,12 @@
 
   <div class="chart-wrap"><canvas id="mainChart"></canvas></div>
 
+  <!-- Balance calórico en Cinta -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Balance calórico diario</div>
+    <canvas id="balanceChart2" style="max-height:200px"></canvas>
+  </div>
+
   <div class="table-wrap">
     <div class="table-head">
       <span id="tableCount">Sesiones</span>
@@ -885,6 +891,7 @@ function renderRunning() {
   document.getElementById('s_avg').textContent = daily.length ? Math.round(totCal/daily.length) : 0;
   renderChart(daily);
   renderTable();
+  renderBalanceChart();
 }
 
 function renderChart(daily) {
@@ -1208,6 +1215,8 @@ async function addFoodPermanent() {
   alert('✓ Guardado en la lista permanentemente');
 }
 
+let balanceChart2 = null;
+
 async function renderBalanceChart() {
   const nutrData = await dbGetAllNutr();
   if (!nutrData.length) return;
@@ -1217,9 +1226,8 @@ async function renderBalanceChart() {
   const labels = nutrData.slice(0,14).reverse().map(d => { const f=d.fecha.split('-'); return f[2]+'/'+f[1]; });
   const ingeridas = nutrData.slice(0,14).reverse().map(d => (d.desayuno||0)+(d.almuerzo||0)+(d.comida||0)+(d.cena||0));
   const quemadas = nutrData.slice(0,14).reverse().map(d => dailyMap[d.fecha] || 0);
-  const ctx = document.getElementById('balanceChart').getContext('2d');
-  if (balanceChart) balanceChart.destroy();
-  balanceChart = new Chart(ctx, {
+  
+  const chartConfig = {
     type: 'bar',
     data: {
       labels,
@@ -1236,7 +1244,21 @@ async function renderBalanceChart() {
         y:{ticks:{color:'#64748b',font:{size:9}},grid:{color:'#1e293b'}}
       }
     }
-  });
+  };
+
+  // Render in Comida tab
+  const ctx1 = document.getElementById('balanceChart');
+  if (ctx1) {
+    if (balanceChart) balanceChart.destroy();
+    balanceChart = new Chart(ctx1.getContext('2d'), JSON.parse(JSON.stringify(chartConfig)));
+  }
+
+  // Render in Cinta tab
+  const ctx2 = document.getElementById('balanceChart2');
+  if (ctx2) {
+    if (balanceChart2) balanceChart2.destroy();
+    balanceChart2 = new Chart(ctx2.getContext('2d'), JSON.parse(JSON.stringify(chartConfig)));
+  }
 }
 
 load();
