@@ -157,34 +157,36 @@
     <button class="btn-save" onclick="saveSession()">✓ Guardar sesión</button>
   </div>
 
-  <div class="stats">
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px">
     <div class="stat" style="border-left:3px solid var(--accent3)">
-      <div class="stat-label">KM totales</div>
-      <div class="stat-value" style="color:var(--accent3)" id="s_km">—</div>
+      <div class="stat-label">KM</div>
+      <div class="stat-value" style="color:var(--accent3);font-size:16px" id="s_km">—</div>
     </div>
     <div class="stat" style="border-left:3px solid var(--accent2)">
       <div class="stat-label">Tiempo</div>
-      <div class="stat-value" style="color:var(--accent2)" id="s_tiempo">—</div>
+      <div class="stat-value" style="color:var(--accent2);font-size:16px" id="s_tiempo">—</div>
     </div>
     <div class="stat" style="border-left:3px solid var(--accent1)">
       <div class="stat-label">Calorías</div>
-      <div class="stat-value" style="color:var(--accent1)" id="s_cal">—</div>
+      <div class="stat-value" style="color:var(--accent1);font-size:16px" id="s_cal">—</div>
     </div>
     <div class="stat" style="border-left:3px solid var(--green)">
       <div class="stat-label">Sesiones</div>
-      <div class="stat-value" style="color:var(--green)" id="s_ses">—</div>
+      <div class="stat-value" style="color:var(--green);font-size:16px" id="s_ses">—</div>
     </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
     <div class="stat" style="border-left:3px solid var(--pink)">
       <div class="stat-label">Días</div>
-      <div class="stat-value" style="color:var(--pink)" id="s_dias">—</div>
+      <div class="stat-value" style="color:var(--pink);font-size:16px" id="s_dias">—</div>
     </div>
     <div class="stat" style="border-left:3px solid var(--yellow)">
       <div class="stat-label">Cal/día</div>
-      <div class="stat-value" style="color:var(--yellow)" id="s_avg">—</div>
+      <div class="stat-value" style="color:var(--yellow);font-size:16px" id="s_avg">—</div>
     </div>
-    <div class="stat" style="border-left:3px solid #34d399;grid-column:span 3">
+    <div class="stat" style="border-left:3px solid #34d399;grid-column:span 2">
       <div class="stat-label">Pasos totales</div>
-      <div class="stat-value" style="color:#34d399" id="s_pasos">—</div>
+      <div class="stat-value" style="color:#34d399;font-size:16px" id="s_pasos">—</div>
     </div>
   </div>
 
