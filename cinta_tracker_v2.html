@@ -66,10 +66,10 @@
   .form-card { background: var(--card); border: 1px solid var(--accent1); border-radius: 12px; padding: 16px; margin-bottom: 14px; display: none; }
   .form-card.open { display: block; }
   .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .fg label { display: block; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .fg label { display: block; font-size: 10px; color: var(--text); margin-bottom: 4px; }
   .fg input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: 9px 10px; color: var(--text); font-family: monospace; font-size: 13px; }
   .turno-row { display: flex; gap: 8px; margin-top: 10px; }
-  .turno-btn { flex: 1; padding: 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); font-family: monospace; font-weight: 700; cursor: pointer; font-size: 13px; }
+  .turno-btn { flex: 1; padding: 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: monospace; font-weight: 700; cursor: pointer; font-size: 13px; }
   .turno-btn.am { border-color: var(--accent1); background: rgba(249,115,22,0.15); color: var(--accent1); }
   .turno-btn.pm { border-color: var(--accent2); background: rgba(56,189,248,0.15); color: var(--accent2); }
   .btn-save { background: var(--green); color: #0a0f1e; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 700; font-family: monospace; cursor: pointer; width: 100%; margin-top: 12px; }
@@ -78,22 +78,22 @@
 
   /* TABLE */
   .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
-  .table-head { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+  .table-head { padding: 11px 14px; border-bottom: 1px solid var(--border); font-size: 10px; letter-spacing: 2px; color: var(--text); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
   .table-scroll { max-height: 260px; overflow-y: auto; }
   table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th { padding: 7px 10px; text-align: left; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); font-size: 10px; }
+  th { padding: 7px 10px; text-align: left; color: var(--text); font-weight: 600; border-bottom: 1px solid var(--border); font-size: 10px; }
   td { padding: 7px 10px; border-bottom: 1px solid rgba(30,41,59,0.4); }
   .badge { border-radius: 4px; padding: 2px 6px; font-size: 10px; font-weight: 700; }
   .badge-m { background: rgba(249,115,22,0.2); color: var(--accent1); }
   .badge-t { background: rgba(56,189,248,0.2); color: var(--accent2); }
-  .btn-del { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 13px; padding: 2px 5px; }
+  .btn-del { background: none; border: none; color: var(--text); cursor: pointer; font-size: 13px; padding: 2px 5px; }
 
   /* SUPPLEMENTS */
   .moment-block { margin-bottom: 20px; }
   .moment-title { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
   .moment-emoji { font-size: 20px; }
   .moment-name { font-size: 14px; font-weight: 700; color: var(--text); }
-  .moment-time { font-size: 11px; color: var(--muted); margin-left: auto; background: var(--border); padding: 3px 8px; border-radius: 20px; }
+  .moment-time { font-size: 11px; color: var(--text); margin-left: auto; background: var(--border); padding: 3px 8px; border-radius: 20px; }
 
   .supp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 14px; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 12px; cursor: pointer; transition: border-color 0.2s; }
   .supp-card.checked { border-color: var(--green); background: rgba(52,211,153,0.05); }
@@ -102,27 +102,27 @@
   .supp-info { flex: 1; }
   .supp-name { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
   .supp-dose { font-size: 11px; color: var(--accent1); margin-bottom: 4px; font-weight: 700; }
-  .supp-why { font-size: 11px; color: var(--muted); line-height: 1.5; }
+  .supp-why { font-size: 11px; color: var(--text); line-height: 1.5; }
   .supp-alert { font-size: 10px; color: var(--yellow); margin-top: 4px; }
 
   .progress-bar-wrap { background: var(--border); border-radius: 20px; height: 6px; margin: 12px 0 4px; }
   .progress-bar { background: var(--green); border-radius: 20px; height: 6px; transition: width 0.4s; }
-  .progress-label { font-size: 10px; color: var(--muted); text-align: right; }
+  .progress-label { font-size: 10px; color: var(--text); text-align: right; }
 
-  .reset-btn { background: none; border: 1px solid var(--border); color: var(--muted); border-radius: 8px; padding: 8px 14px; font-family: monospace; font-size: 11px; cursor: pointer; width: 100%; margin-top: 4px; }
+  .reset-btn { background: none; border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 8px 14px; font-family: monospace; font-size: 11px; cursor: pointer; width: 100%; margin-top: 4px; }
 
   /* ANALYTICS */
   .analytics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
   .analytic-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px; }
-  .analytic-label { font-size: 9px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+  .analytic-label { font-size: 9px; color: var(--text); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
   .analytic-value { font-size: 20px; font-weight: 700; }
-  .analytic-ref { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .analytic-ref { font-size: 10px; color: var(--text); margin-top: 2px; }
   .analytic-trend { font-size: 10px; margin-top: 4px; }
   .trend-up { color: var(--green); }
   .trend-warn { color: var(--yellow); }
   .trend-danger { color: var(--red); }
 
-  .footer { text-align: center; color: var(--muted); font-size: 10px; margin-top: 16px; letter-spacing: 1px; padding: 0 16px; }
+  .footer { text-align: center; color: var(--text); font-size: 10px; margin-top: 16px; letter-spacing: 1px; padding: 0 16px; }
 </style>
 </head>
 <body>
@@ -195,7 +195,7 @@
   <div class="table-wrap">
     <div class="table-head">
       <span id="tableCount">Sesiones</span>
-      <button onclick="exportCSV()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:5px;padding:4px 10px;cursor:pointer;font-size:10px;font-family:monospace;">↓ CSV</button>
+      <button onclick="exportCSV()" style="background:none;border:1px solid var(--border);color:var(--text);border-radius:5px;padding:4px 10px;cursor:pointer;font-size:10px;font-family:monospace;">↓ CSV</button>
     </div>
     <div class="table-scroll">
       <table>
@@ -340,11 +340,11 @@
     <div class="card-title">🔴 Alertas activas</div>
     <div style="background:rgba(239,68,68,0.1);border:1px solid var(--red);border-radius:8px;padding:12px;margin-bottom:10px">
       <div style="color:var(--red);font-weight:700;font-size:13px;margin-bottom:4px">Ferritina 422 ng/mL</div>
-      <div style="font-size:11px;color:var(--muted)">Límite: 375 ng/mL · Subiendo: 407→422 · Solicitar transferrina + IST urgente. Valorar retomar donación de sangre.</div>
+      <div style="font-size:11px;color:var(--text)">Límite: 375 ng/mL · Subiendo: 407→422 · Solicitar transferrina + IST urgente. Valorar retomar donación de sangre.</div>
     </div>
     <div style="background:rgba(251,191,36,0.1);border:1px solid var(--yellow);border-radius:8px;padding:12px">
       <div style="color:var(--yellow);font-weight:700;font-size:13px;margin-bottom:4px">Vitamina D 31,9 ng/mL</div>
-      <div style="font-size:11px;color:var(--muted)">Insuficiencia leve. Necesitas >50 ng/mL. D3+K2 4.000 UI activo. Control en 3 meses.</div>
+      <div style="font-size:11px;color:var(--text)">Insuficiencia leve. Necesitas >50 ng/mL. D3+K2 4.000 UI activo. Control en 3 meses.</div>
     </div>
   </div>
 
@@ -431,7 +431,7 @@
       </div>
       <div class="analytic-card" style="border-left:3px solid var(--muted)">
         <div class="analytic-label">Androstendiona</div>
-        <div class="analytic-value" style="color:var(--muted)">0,70</div>
+        <div class="analytic-value" style="color:var(--text)">0,70</div>
         <div class="analytic-ref">ng/mL · ref: 0,6–3,1</div>
         <div class="analytic-trend">• Límite inferior</div>
       </div>
@@ -454,20 +454,20 @@
     <div class="card-title">Balance calórico de hoy</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
       <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Ingeridas</div>
+        <div style="font-size:9px;color:var(--text);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Ingeridas</div>
         <div style="font-size:24px;font-weight:700;color:var(--accent1)" id="n_total_in">0</div>
-        <div style="font-size:10px;color:var(--muted)">kcal</div>
+        <div style="font-size:10px;color:var(--text)">kcal</div>
       </div>
       <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Quemadas cinta</div>
+        <div style="font-size:9px;color:var(--text);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Quemadas cinta</div>
         <div style="font-size:24px;font-weight:700;color:var(--accent2)" id="n_total_out">0</div>
-        <div style="font-size:10px;color:var(--muted)">kcal</div>
+        <div style="font-size:10px;color:var(--text)">kcal</div>
       </div>
     </div>
     <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
-      <div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Déficit neto</div>
+      <div style="font-size:9px;color:var(--text);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Déficit neto</div>
       <div style="font-size:28px;font-weight:700" id="n_deficit">—</div>
-      <div style="font-size:10px;color:var(--muted)">kcal · sin metabolismo basal (~2.100 kcal)</div>
+      <div style="font-size:10px;color:var(--text)">kcal · sin metabolismo basal (~2.100 kcal)</div>
     </div>
   </div>
 
@@ -479,7 +479,7 @@
       <span class="moment-time" id="des_total_lbl">0 kcal</span>
     </div>
     <div id="des_items"></div>
-    <div style="font-size:10px;color:var(--muted);margin-top:4px;padding-left:4px">Menú fijo — toca para marcar</div>
+    <div style="font-size:10px;color:var(--text);margin-top:4px;padding-left:4px">Menú fijo — toca para marcar</div>
   </div>
 
   <!-- ALMUERZO -->
@@ -513,6 +513,35 @@
   </div>
 
   
+
+  <!-- Añadir alimento -->
+  <div class="card" style="margin-bottom:14px" id="addFoodSection">
+    <div class="card-title">➕ Añadir alimento</div>
+    <div class="form-grid" style="margin-bottom:10px">
+      <div class="fg">
+        <label>Comida</label>
+        <select id="af_meal" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:var(--text);font-family:monospace;font-size:13px">
+          <option value="desayuno">🌅 Desayuno</option>
+          <option value="almuerzo">🥪 Almuerzo</option>
+          <option value="comida" selected>☀️ Comida</option>
+          <option value="cena">🌙 Cena</option>
+        </select>
+      </div>
+      <div class="fg"><label>Nombre</label><input type="text" id="af_name" placeholder="Ej: Aguacate" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:var(--text);font-family:monospace;font-size:13px"></div>
+      <div class="fg"><label>Cantidad</label><input type="text" id="af_qty" placeholder="Ej: 100g" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:var(--text);font-family:monospace;font-size:13px"></div>
+      <div class="fg"><label>Calorías</label><input type="number" id="af_kcal" placeholder="150" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:var(--text);font-family:monospace;font-size:13px"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="addFoodToday()" style="flex:1;background:var(--accent2);color:#0a0f1e;border:none;border-radius:8px;padding:10px;font-weight:700;font-family:monospace;font-size:13px;cursor:pointer">+ Solo hoy</button>
+      <button onclick="addFoodPermanent()" style="flex:1;background:var(--accent1);color:#0a0f1e;border:none;border-radius:8px;padding:10px;font-weight:700;font-family:monospace;font-size:13px;cursor:pointer">+ Guardar en lista</button>
+    </div>
+  </div>
+
+  <!-- Gráfica balance calórico -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Balance calórico diario</div>
+    <canvas id="balanceChart" style="max-height:200px"></canvas>
+  </div>
 
   <!-- Historial -->
   <div class="table-wrap">
@@ -647,6 +676,25 @@ async function dbGetAllNutr() {
   return data || [];
 }
 
+// Custom foods
+async function dbGetCustomFoods() {
+  const data = await sbFetch('alimentos_custom?select=*&order=meal.asc,name.asc');
+  return data || [];
+}
+
+async function dbSaveCustomFood(meal, name, qty, kcal) {
+  const result = await sbFetch('alimentos_custom', {
+    method: 'POST',
+    upsert: false,
+    body: JSON.stringify({meal, name, qty, kcal})
+  });
+  return result;
+}
+
+async function dbDeleteCustomFood(id) {
+  await sbFetch('alimentos_custom?id=eq.' + id, { method: 'DELETE' });
+}
+
 async function dbGetAlimentos(fecha) {
   const data = await sbFetch('alimentos?fecha=eq.' + fecha + '&select=*');
   if (!data || !data.length) return {};
@@ -708,6 +756,16 @@ function hideLoading() {
 async function load() {
   showLoading('⏳ Cargando datos...');
   try {
+    // Load custom foods first
+    const customs = await dbGetCustomFoods();
+    customs.forEach(f => {
+      const id = 'custom_' + f.id;
+      if (FOOD_DB[f.meal]) {
+        if (!FOOD_DB[f.meal].find(x => x.id === id)) {
+          FOOD_DB[f.meal].push({id, name:f.name, qty:f.qty, kcal:f.kcal, customId:f.id});
+        }
+      }
+    });
     const data = await dbGetSessions();
     if (data.length === 0) {
       // First time - load initial data
@@ -1090,6 +1148,95 @@ async function renderNutrition() {
     el.style.color = deficit <= 0 ? 'var(--green)' : 'var(--red)';
   }
   renderNutrHistory();
+}
+
+// ── CUSTOM FOODS ─────────────────────────────────────────
+let customFoods = [];
+let balanceChart = null;
+
+async function loadCustomFoods() {
+  customFoods = await dbGetCustomFoods();
+}
+
+function getFormFood() {
+  const meal = document.getElementById('af_meal').value;
+  const name = document.getElementById('af_name').value.trim();
+  const qty = document.getElementById('af_qty').value.trim();
+  const kcal = parseInt(document.getElementById('af_kcal').value);
+  if (!name || !kcal) { alert('Nombre y calorías son obligatorios'); return null; }
+  return { meal, name, qty: qty || '1 porción', kcal };
+}
+
+function clearFoodForm() {
+  document.getElementById('af_name').value = '';
+  document.getElementById('af_qty').value = '';
+  document.getElementById('af_kcal').value = '';
+}
+
+async function addFoodToday() {
+  const f = getFormFood();
+  if (!f) return;
+  // Add to today's nutrStateCache as a temporary item
+  const tempId = 'temp_' + Date.now();
+  // Add to FOOD_DB temporarily
+  FOOD_DB[f.meal].push({id: tempId, name: f.name, qty: f.qty, kcal: f.kcal, temp: true});
+  setNutrState(tempId, true);
+  const today = getTodayKey();
+  await dbToggleAlimento(today, tempId, true);
+  const newState = getNutrState();
+  const des = calcMealTotal('desayuno', newState);
+  const alm = calcMealTotal('almuerzo', newState);
+  const com = calcMealTotal('comida', newState);
+  const cen = calcMealTotal('cena', newState);
+  await dbSaveNutr(today, des, alm, com, cen);
+  clearFoodForm();
+  renderNutrition();
+}
+
+async function addFoodPermanent() {
+  const f = getFormFood();
+  if (!f) return;
+  showLoading('⏳ Guardando alimento...');
+  const saved = await dbSaveCustomFood(f.meal, f.name, f.qty, f.kcal);
+  if (saved && saved.length) {
+    const newFood = {id: 'custom_' + saved[0].id, name: f.name, qty: f.qty, kcal: f.kcal, customId: saved[0].id};
+    FOOD_DB[f.meal].push(newFood);
+  }
+  hideLoading();
+  clearFoodForm();
+  renderNutrition();
+  alert('✓ Guardado en la lista permanentemente');
+}
+
+async function renderBalanceChart() {
+  const nutrData = await dbGetAllNutr();
+  if (!nutrData.length) return;
+  const daily = getDaily();
+  const dailyMap = {};
+  daily.forEach(d => { dailyMap[d.fecha] = d.calorias; });
+  const labels = nutrData.slice(0,14).reverse().map(d => { const f=d.fecha.split('-'); return f[2]+'/'+f[1]; });
+  const ingeridas = nutrData.slice(0,14).reverse().map(d => (d.desayuno||0)+(d.almuerzo||0)+(d.comida||0)+(d.cena||0));
+  const quemadas = nutrData.slice(0,14).reverse().map(d => dailyMap[d.fecha] || 0);
+  const ctx = document.getElementById('balanceChart').getContext('2d');
+  if (balanceChart) balanceChart.destroy();
+  balanceChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {label:'Ingeridas',data:ingeridas,backgroundColor:'rgba(249,115,22,0.7)',borderColor:'#f97316',borderWidth:1,borderRadius:4},
+        {label:'Quemadas cinta',data:quemadas,backgroundColor:'rgba(56,189,248,0.7)',borderColor:'#38bdf8',borderWidth:1,borderRadius:4}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'#64748b',font:{family:'Courier New',size:10}}}},
+      scales:{
+        x:{ticks:{color:'#64748b',font:{size:9}},grid:{color:'#1e293b'}},
+        y:{ticks:{color:'#64748b',font:{size:9}},grid:{color:'#1e293b'}}
+      }
+    }
+  });
 }
 
 load();
