@@ -588,6 +588,83 @@
   <div class="footer" style="margin-top:12px">Objetivo: 1.200–1.400 kcal · Déficit saludable: 500–700 kcal</div>
 </div>
 
+<!-- PAGE: PESO -->
+<div class="page" id="page-peso">
+  <div class="page-header">
+    <div class="page-label">Seguimiento</div>
+    <div class="page-title">PESO</div>
+    <div class="page-sub">Inicio: 102 kg · Objetivo: 85 kg</div>
+  </div>
+
+  <!-- Stats peso -->
+  <div class="stats" style="grid-template-columns:repeat(3,1fr);margin-bottom:16px">
+    <div class="stat" style="border-left:3px solid var(--accent1)">
+      <div class="stat-label">Actual</div>
+      <div class="stat-value" style="color:var(--accent1)" id="p_actual">—</div>
+    </div>
+    <div class="stat" style="border-left:3px solid var(--green)">
+      <div class="stat-label">Perdido</div>
+      <div class="stat-value" style="color:var(--green)" id="p_perdido">—</div>
+    </div>
+    <div class="stat" style="border-left:3px solid var(--accent3)">
+      <div class="stat-label">Restante</div>
+      <div class="stat-value" style="color:var(--accent3)" id="p_restante">—</div>
+    </div>
+  </div>
+
+  <!-- Progreso hacia objetivo -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Progreso hacia 85 kg</div>
+    <div class="progress-bar-wrap" style="height:10px;margin:8px 0">
+      <div class="progress-bar" id="p_progress" style="width:0%;height:10px"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#ffffff;margin-top:4px">
+      <span>102 kg</span>
+      <span id="p_pct" style="color:var(--green);font-weight:700">0%</span>
+      <span>85 kg</span>
+    </div>
+  </div>
+
+  <!-- Gráfica evolución -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Evolución del peso</div>
+    <canvas id="pesoChart" style="max-height:200px"></canvas>
+  </div>
+
+  <!-- Añadir peso -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Registrar peso de hoy</div>
+    <div style="display:flex;gap:10px;align-items:flex-end">
+      <div class="fg" style="flex:1">
+        <label style="font-size:11px;color:#ffffff;display:block;margin-bottom:4px">Fecha</label>
+        <input type="date" id="p_fecha" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#ffffff;font-family:monospace;font-size:13px">
+      </div>
+      <div class="fg" style="flex:1">
+        <label style="font-size:11px;color:#ffffff;display:block;margin-bottom:4px">Peso (kg)</label>
+        <input type="number" step="0.1" id="p_kg" placeholder="99.0" style="width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:9px 10px;color:#ffffff;font-family:monospace;font-size:13px">
+      </div>
+    </div>
+    <button onclick="savePeso()" class="btn-save" style="margin-top:10px">✓ Guardar peso</button>
+  </div>
+
+  <!-- Proyección -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="card-title">Proyección</div>
+    <div id="p_proyeccion" style="font-size:13px;color:#ffffff;line-height:1.8"></div>
+  </div>
+
+  <!-- Historial peso -->
+  <div class="table-wrap">
+    <div class="table-head"><span id="p_count">Historial de peso</span></div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Fecha</th><th>Peso</th><th>Cambio</th></tr></thead>
+        <tbody id="pesoBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <!-- BOTTOM NAV -->
 <nav class="nav">
   <button class="nav-btn active" id="nav-running" onclick="showPage('running')">
@@ -598,6 +675,9 @@
   </button>
   <button class="nav-btn" id="nav-supps" onclick="showPage('supps')">
     <span>💊</span>Suplementos
+  </button>
+  <button class="nav-btn" id="nav-peso" onclick="showPage('peso')">
+    <span>⚖️</span>Peso
   </button>
   <button class="nav-btn" id="nav-analytics" onclick="showPage('analytics')">
     <span>🧪</span>Analíticas
@@ -815,6 +895,7 @@ async function load() {
   renderRunning();
   renderSupps();
   renderNutrition();
+  renderPeso();
 }
 
 async function saveData() {
@@ -1412,6 +1493,110 @@ async function renderSuppHistory() {
         </div>
         ${faltaron.length ? `<div style="font-size:11px;color:var(--red)">❌ Faltaron: ${faltaron.map(id=>SUPP_NAMES[id]||id).join(', ')}</div>` : '<div style="font-size:11px;color:var(--green)">✅ Todos los suplementos tomados</div>'}
       </div>`;
+  }).join('');
+}
+
+// ── PESO ─────────────────────────────────────────────────
+let pesoChart = null;
+const PESO_INICIO = 102;
+const PESO_OBJETIVO = 85;
+
+async function dbGetPeso() {
+  const data = await sbFetch('peso?order=fecha.asc&select=*');
+  return data || [];
+}
+
+async function dbSavePeso(fecha, kg) {
+  await sbFetch('peso', {
+    method: 'POST',
+    upsert: true,
+    body: JSON.stringify({fecha, kg})
+  });
+}
+
+async function savePeso() {
+  const fecha = document.getElementById('p_fecha').value;
+  const kg = parseFloat(document.getElementById('p_kg').value);
+  if (!fecha || !kg) { alert('Fecha y peso son obligatorios'); return; }
+  showLoading('⏳ Guardando peso...');
+  await dbSavePeso(fecha, kg);
+  hideLoading();
+  document.getElementById('p_kg').value = '';
+  renderPeso();
+}
+
+async function renderPeso() {
+  const data = await dbGetPeso();
+  if (!data.length) return;
+
+  // Set today's date in input
+  document.getElementById('p_fecha').value = getTodayKey();
+
+  const ultimo = data[data.length - 1];
+  const pesoActual = parseFloat(ultimo.kg);
+  const perdido = PESO_INICIO - pesoActual;
+  const restante = pesoActual - PESO_OBJETIVO;
+  const progreso = Math.round((perdido / (PESO_INICIO - PESO_OBJETIVO)) * 100);
+
+  document.getElementById('p_actual').textContent = pesoActual + ' kg';
+  document.getElementById('p_perdido').textContent = '-' + perdido.toFixed(1) + ' kg';
+  document.getElementById('p_restante').textContent = restante.toFixed(1) + ' kg';
+  document.getElementById('p_progress').style.width = Math.min(progreso, 100) + '%';
+  document.getElementById('p_pct').textContent = progreso + '%';
+
+  // Proyección
+  const diasDesdeInicio = Math.round((new Date(ultimo.fecha) - new Date('2026-04-27')) / (1000*60*60*24));
+  const ritmoKgDia = diasDesdeInicio > 0 ? perdido / diasDesdeInicio : 0;
+  const ritmoKgMes = ritmoKgDia * 30;
+  const diasRestantes = restante / ritmoKgDia;
+  const fechaObjetivo = new Date(ultimo.fecha);
+  fechaObjetivo.setDate(fechaObjetivo.getDate() + Math.round(diasRestantes));
+  const fmtObjetivo = fechaObjetivo.toLocaleDateString('es-ES', {month:'long', year:'numeric'});
+
+  document.getElementById('p_proyeccion').innerHTML = `
+    <div style="margin-bottom:6px">📉 Ritmo actual: <strong style="color:var(--green)">${ritmoKgMes.toFixed(1)} kg/mes</strong></div>
+    <div style="margin-bottom:6px">🎯 Objetivo 85 kg: <strong style="color:var(--accent1)">${fmtObjetivo}</strong></div>
+    <div style="margin-bottom:6px">📅 Días activos: <strong style="color:var(--accent2)">${diasDesdeInicio} días</strong></div>
+    <div style="font-size:11px;color:#94a3b8;margin-top:8px">* Basado en ritmo real desde 27/04/2026. Incluye períodos de reposo postoperatorio.</div>
+  `;
+
+  // Chart
+  const labels = data.map(d => { const f=d.fecha.split('-'); return f[2]+'/'+f[1]; });
+  const pesos = data.map(d => parseFloat(d.kg));
+  const ctx = document.getElementById('pesoChart').getContext('2d');
+  if (pesoChart) pesoChart.destroy();
+  pesoChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {label:'Peso (kg)', data:pesos, borderColor:'#f97316', backgroundColor:'rgba(249,115,22,0.1)', fill:true, tension:0.3, pointBackgroundColor:'#f97316', pointRadius:5},
+        {label:'Objetivo', data:labels.map(()=>PESO_OBJETIVO), borderColor:'#34d399', borderDash:[5,5], pointRadius:0, borderWidth:1}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:true,
+      plugins:{legend:{labels:{color:'#ffffff',font:{family:'Courier New',size:11}}}},
+      scales:{
+        x:{ticks:{color:'#ffffff',font:{size:10}},grid:{color:'#1e293b'}},
+        y:{ticks:{color:'#ffffff',font:{size:10}},grid:{color:'#1e293b'},min:83,max:105}
+      }
+    }
+  });
+
+  // Table
+  document.getElementById('p_count').textContent = 'Historial (' + data.length + ' registros)';
+  const rev = [...data].reverse();
+  document.getElementById('pesoBody').innerHTML = rev.map((d, i) => {
+    const prev = rev[i+1];
+    const cambio = prev ? (parseFloat(d.kg) - parseFloat(prev.kg)).toFixed(1) : '—';
+    const cambioColor = cambio === '—' ? '#ffffff' : parseFloat(cambio) <= 0 ? 'var(--green)' : 'var(--red)';
+    const f = d.fecha.split('-');
+    return `<tr>
+      <td style="color:#ffffff">${f[2]}/${f[1]}/${f[0]}</td>
+      <td style="color:var(--accent1);font-weight:700">${d.kg} kg</td>
+      <td style="color:${cambioColor};font-weight:700">${cambio !== '—' ? (parseFloat(cambio)>0?'+':'')+cambio : '—'}</td>
+    </tr>`;
   }).join('');
 }
 
