@@ -482,24 +482,30 @@
   </div>
 
   <!-- Balance -->
-  <div class="card" style="margin-bottom:14px">
+  <div class="card" style="margin-bottom:14px" id="balance-card-nutrition">
     <div class="card-title">Balance calórico de hoy</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
-      <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:9px;color:var(--text);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Ingeridas</div>
-        <div style="font-size:24px;font-weight:700;color:var(--accent1)" id="n_total_in">0</div>
-        <div style="font-size:10px;color:var(--text)">kcal</div>
+    <div style="font-size:11px;color:#94a3b8;text-align:center;margin-bottom:10px" id="balance-date-nutr">—</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+      <div style="background:var(--bg);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:9px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Ingeridas</div>
+        <div style="font-size:20px;font-weight:700;color:#f97316" id="n_total_in">0</div>
+        <div style="font-size:10px;color:#94a3b8">kcal</div>
       </div>
-      <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
-        <div style="font-size:9px;color:var(--text);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Quemadas cinta</div>
-        <div style="font-size:24px;font-weight:700;color:var(--accent2)" id="n_total_out">0</div>
-        <div style="font-size:10px;color:var(--text)">kcal</div>
+      <div style="background:var(--bg);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:9px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Cinta</div>
+        <div style="font-size:20px;font-weight:700;color:#38bdf8" id="n_total_out">0</div>
+        <div style="font-size:10px;color:#94a3b8">kcal</div>
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:9px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Basal</div>
+        <div style="font-size:20px;font-weight:700;color:#a78bfa">1.976</div>
+        <div style="font-size:10px;color:#94a3b8">kcal fijo</div>
       </div>
     </div>
     <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
-      <div style="font-size:9px;color:var(--text);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Déficit neto</div>
+      <div style="font-size:9px;color:#ffffff;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Déficit real</div>
       <div style="font-size:28px;font-weight:700" id="n_deficit">—</div>
-      <div style="font-size:10px;color:var(--text)">kcal · sin metabolismo basal (~2.100 kcal)</div>
+      <div style="font-size:11px;color:#94a3b8;margin-top:4px">Gasto total: <span id="n_gasto_total">—</span> kcal · Obj: −1.155 kcal</div>
     </div>
   </div>
 
@@ -1296,15 +1302,19 @@ async function renderNutrition() {
   document.getElementById('alm_total_lbl').textContent = alm + ' kcal';
   document.getElementById('com_total_lbl').textContent = com + ' kcal';
   document.getElementById('cen_total_lbl').textContent = cen + ' kcal';
+  const BASAL = 1976;
   document.getElementById('n_total_in').textContent = total;
   const burned = getTodayBurnedCal();
   document.getElementById('n_total_out').textContent = burned;
-  const deficit = total - burned;
+  const gastoTotal = burned + BASAL;
+  const deficit = total - gastoTotal;
+  const gastoEl = document.getElementById('n_gasto_total');
+  if (gastoEl) gastoEl.textContent = gastoTotal;
   const el = document.getElementById('n_deficit');
-  if (total === 0) { el.textContent = '—'; el.style.color = 'var(--muted)'; }
+  if (total === 0) { el.textContent = '—'; el.style.color = '#94a3b8'; }
   else {
     el.textContent = (deficit > 0 ? '+' : '') + deficit;
-    el.style.color = deficit <= 0 ? 'var(--green)' : 'var(--red)';
+    el.style.color = deficit <= -1155 ? '#34d399' : deficit <= 0 ? '#fbbf24' : '#ef4444';
   }
   renderNutrHistory();
 }
